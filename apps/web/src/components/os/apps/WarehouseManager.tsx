@@ -1,218 +1,129 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+import { useEffect, useState } from 'react';
 import { fetchNetworkData } from '@/lib/api';
-import { rankWarehouses, WarehouseCandidate } from '@/lib/calculator';
-import { SCMMap } from '../../ui/SCMMap';
-import { SCMKpiStrip } from '../../ui/SCMKpiStrip';
-import { Marker } from 'react-map-gl/maplibre';
+import { formatNumber, formatPercent } from '@/lib/format';
+import { Box, Filter } from 'lucide-react';
+import { SCMMap } from '../../map/SCMMap';
 
 export function WarehouseManager() {
   const [data, setData] = useState<any>(null);
-  const [targetDist, setTargetDist] = useState('DIST-RAI'); // Default to Raipur cluster demo
-  const targetNodeData = data?.distributors?.find((d:any) => d.id === targetDist);
-  
-  const [weights, setWeights] = useState({
-    w_distance: 0.2,
-    w_cost: 0.2,
-    w_headroom: 0.1,
-    w_transit_time: 0.2,
-    w_reliability: 0.1,
-    w_availability: 0.2
-  });
-
-  const [maxDistance, setMaxDistance] = useState<number>(600);
-  const [maxTransit, setMaxTransit] = useState<number>(24);
+  const [selectedWH, setSelectedWH] = useState<any>(null);
 
   useEffect(() => {
     fetchNetworkData().then(setData);
   }, []);
 
-  if (!data) return <div className="p-2">Loading...</div>;
+  if (!data) return <div className="p-8 text-sm font-mono text-gray-500 flex items-center gap-2"><div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"/> Loading Warehouse Data...</div>;
 
-  // 1. Gather all possible CFAs (actives only) for this target
-  const rawCandidates: WarehouseCandidate[] = [];
-  const candidateHubs: any[] = [];
-
-  data.lanes.forEach((l: any) => {
-    if (l.dest_id === targetDist) {
-      const wh = data.warehouses.find((w: any) => w.id === l.source_id);
-      if (wh) {
-        if (wh.status === "candidate") {
-           candidateHubs.push(wh);
-        } else {
-           rawCandidates.push({
-             id: wh.id,
-             distance_km: l.distance_km,
-             cost_per_pallet: wh.operating_cost_per_pallet,
-             capacity_headroom_pct: 1.0 - wh.utilization_pct,
-             transit_mean: l.actual_transit_mean,
-             transit_std: l.actual_transit_std,
-             stock_availability: 0.95 // Mock for now
-           });
-        }
-      }
-    }
-  });
-
-  const ranked = rankWarehouses(rawCandidates, weights, maxDistance, maxTransit);
-  
-  // Find excluded
-  const rankedIds = new Set(ranked.map(c => c.id));
-  const excluded = rawCandidates.filter(c => !rankedIds.has(c.id));
-
-  const handleWeightChange = (key: keyof typeof weights, value: number) => {
-    setWeights(prev => ({ ...prev, [key]: value }));
-  };
+  const warehouses = data.warehouses || [];
 
   return (
-    <div className="flex flex-col h-full bg-sys-gray font-mono text-xs">
-      <div className="bg-sys-white border-b-2 border-sys-black p-2 flex justify-between items-center">
-        <div className="font-bold">Warehouse Manager (Phase 3+4a)</div>
-        <div className="text-[10px] bg-green-100 border border-green-800 px-2 py-0.5">Live Math</div>
-      </div>
-      
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar Controls */}
-        <div className="w-64 bg-sys-white border-r-2 border-sys-black p-2 overflow-y-auto flex flex-col gap-4">
-          <div>
-            <label className="font-bold mb-1 block">Target Node:</label>
-            <select 
-              className="w-full border border-sys-black p-1"
-              value={targetDist}
-              onChange={e => setTargetDist(e.target.value)}
-            >
-              {data.distributors.slice(0, 20).map((d: any) => (
-                <option key={d.id} value={d.id}>{d.cluster_name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="border-t border-sys-black pt-2">
-            <h4 className="font-bold mb-2">Feasibility Filters</h4>
-            <div className="mb-2">
-              <label>Max Dist: {maxDistance}km</label>
-              <input type="range" min="100" max="3000" step="100" value={maxDistance} onChange={e => setMaxDistance(Number(e.target.value))} className="w-full" />
-            </div>
-            <div>
-              <label>Max Transit: {maxTransit}h</label>
-              <input type="range" min="10" max="200" step="10" value={maxTransit} onChange={e => setMaxTransit(Number(e.target.value))} className="w-full" />
-            </div>
-          </div>
-          <div className="border-t border-sys-black pt-2 flex flex-col gap-2">
-            <h4 className="font-bold">Weights (Auto-norm)</h4>
-            {Object.entries(weights).map(([k, v]) => (
-              <div key={k}>
-                <div className="flex justify-between">
-                  <span>{k.replace('w_', '')}</span>
-                  <span>{v.toFixed(1)}</span>
-                </div>
-                <input 
-                  type="range" min="0" max="1" step="0.1" value={v}
-                  onChange={e => handleWeightChange(k as keyof typeof weights, parseFloat(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-            ))}
-          </div>
+    <div className="scm-app-layout">
+      <div className="scm-header">
+        <div className="scm-header-title">
+          <Box className="w-4 h-4 text-[var(--sys-amber)]" />
+          WAREHOUSE INTELLIGENCE
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col bg-sys-gray relative">
-          <div className="h-1/2 border-b-2 border-sys-black relative">
-            <SCMMap initialViewState={{ longitude: 79.0, latitude: 21.0, zoom: 4.5 }}>
-                {/* Target */}
-                {targetNodeData && targetNodeData.coordinates && (
-                  <Marker longitude={targetNodeData.coordinates[1]} latitude={targetNodeData.coordinates[0]}>
-                    <div className="w-5 h-5 rounded-full border-2 border-white bg-blue-500 shadow-lg flex items-center justify-center text-white text-[10px] font-bold">T</div>
-                  </Marker>
-                )}
-                {/* Candidates */}
-                {ranked.map(c => {
-                  const node = data.warehouses.find((w:any) => w.id === c.id);
-                  if(!node || !node.coordinates) return null;
+      <div className="scm-kpi-strip">
+        <div className="scm-kpi-card">
+          <div className="scm-kpi-label">Active Warehouses</div>
+          <div className="scm-kpi-value">{formatNumber(warehouses.length)}</div>
+        </div>
+        <div className="scm-kpi-card">
+          <div className="scm-kpi-label">Total Capacity</div>
+          <div className="scm-kpi-value">{formatNumber(warehouses.reduce((a:number,b:any) => a + (b.capacity || 0), 0))}</div>
+        </div>
+        <div className="scm-kpi-card">
+          <div className="scm-kpi-label">Current Inventory</div>
+          <div className="scm-kpi-value">{formatNumber(warehouses.reduce((a:number,b:any) => a + (b.current_inventory || 0), 0))}</div>
+        </div>
+        <div className="scm-kpi-card">
+          <div className="scm-kpi-label">Avg Utilization</div>
+          <div className="scm-kpi-value">{formatPercent(warehouses.reduce((a:number,b:any) => a + (b.current_inventory || 0) / (b.capacity || 1), 0) / (warehouses.length || 1))}</div>
+        </div>
+      </div>
+
+      <div className="scm-main">
+        <div className="scm-panel w-2/5">
+          <div className="scm-toolbar justify-between">
+            <span className="font-bold">Operations Matrix</span>
+            <Filter className="w-3 h-3 text-gray-400" />
+          </div>
+          <div className="scm-table-container">
+            <table className="scm-table">
+              <thead>
+                <tr>
+                  <th>WH ID</th>
+                  <th>Location</th>
+                  <th className="text-right">Capacity</th>
+                  <th className="text-right">Inventory</th>
+                  <th className="text-right">Util %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {warehouses.map((w: any) => {
+                  const util = w.capacity ? (w.current_inventory || 0) / w.capacity : 0;
                   return (
-                    <Marker key={c.id} longitude={node.coordinates[1]} latitude={node.coordinates[0]}>
-                      <div className="w-4 h-4 rounded-full border border-sys-black bg-yellow-400 cursor-pointer shadow-md" title={c.id} />
-                    </Marker>
+                    <tr key={w.id} onClick={() => setSelectedWH(w)} className={selectedWH?.id === w.id ? 'bg-amber-50/80' : ''}>
+                      <td className="font-bold text-[var(--sys-amber)]">{w.id}</td>
+                      <td>{w.location || 'N/A'}</td>
+                      <td className="text-right">{formatNumber(w.capacity)}</td>
+                      <td className="text-right">{formatNumber(w.current_inventory)}</td>
+                      <td className="text-right font-bold text-gray-900">{formatPercent(util)}</td>
+                    </tr>
                   );
                 })}
-            </SCMMap>
-          </div>
-          <div className="h-1/2 overflow-y-auto p-4 bg-white">
-          <SCMKpiStrip items={[
-              { label: 'Feasible Hubs', value: ranked.length, color: '#1B998B' },
-              { label: 'Excluded', value: excluded.length, color: '#E3352F' },
-              { label: 'Top Score', value: ranked[0] ? (ranked[0].score * 100).toFixed(1) : '-', trend: 'up' },
-          ]} />
-          
-          {candidateHubs.length > 0 && (
-            <div className="my-4 bg-yellow-100 border-2 border-yellow-800 p-2 text-yellow-900 shadow-[2px_2px_0_var(--sys-black)] flex justify-between">
-              <div>
-                <h3 className="font-bold">New Hub Candidates Found</h3>
-                {candidateHubs.map((c: any) => (
-                  <div key={c.id}>
-                    <strong>{c.id} ({c.name})</strong> — Setup: ₹{(c.setup_cost/100000).toFixed(0)}L | Lead: {c.lead_time_months}m
-                  </div>
-                ))}
-              </div>
-              <div className="text-right">
-                <p className="font-bold">Payback Estimate (ROI)</p>
-                <p>Est. Annual Save vs Pune: ₹30,603 x 100 trips = ₹30.6L</p>
-                <p><strong>Payback: ~1.6 years</strong></p>
-              </div>
-            </div>
-          )}
-
-          <table className="w-full text-left border-collapse border border-sys-black bg-white mb-4">
-            <thead>
-              <tr className="bg-sys-black text-sys-white">
-                <th className="p-1 border border-sys-black">Rank</th>
-                <th className="p-1 border border-sys-black">CFA ID</th>
-                <th className="p-1 border border-sys-black">Score</th>
-                <th className="p-1 border border-sys-black">Dist</th>
-                <th className="p-1 border border-sys-black">Transit</th>
-                <th className="p-1 border border-sys-black">Cost/Pallet</th>
-                <th className="p-1 border border-sys-black">Headroom</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ranked.map((c, i) => (
-                <tr key={c.id} className={i === 0 ? 'bg-green-100 font-bold' : 'hover:bg-gray-100'}>
-                  <td className="p-1 border border-sys-black">{i + 1}</td>
-                  <td className="p-1 border border-sys-black">{c.id}</td>
-                  <td className="p-1 border border-sys-black">{(c.score * 100).toFixed(1)}</td>
-                  <td className="p-1 border border-sys-black">{c.distance_km} km</td>
-                  <td className="p-1 border border-sys-black">{c.transit_mean.toFixed(0)} h</td>
-                  <td className="p-1 border border-sys-black">₹{c.cost_per_pallet.toFixed(2)}</td>
-                  <td className="p-1 border border-sys-black">{(c.capacity_headroom_pct * 100).toFixed(1)}%</td>
-                </tr>
-              ))}
-              {ranked.length === 0 && <tr><td colSpan={7} className="p-2 text-center">No feasible candidates found.</td></tr>}
-            </tbody>
-          </table>
-
-          {excluded.length > 0 && (
-            <div>
-              <h3 className="font-bold border-b border-sys-black mb-2">Excluded by Feasibility Filters</h3>
-              <table className="w-full text-left border-collapse border border-sys-black bg-gray-100 text-gray-500">
-                <tbody>
-                  {excluded.map(c => {
-                    const failDist = c.distance_km > maxDistance;
-                    const failTransit = c.transit_mean > maxTransit;
-                    const reason = [];
-                    if (failDist) reason.push(`Distance > ${maxDistance}km`);
-                    if (failTransit) reason.push(`Transit > ${maxTransit}h`);
-                    return (
-                      <tr key={c.id}>
-                        <td className="p-1 border border-sys-black w-32">{c.id}</td>
-                        <td className="p-1 border border-sys-black italic text-red-500">{reason.join(' AND ')}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+              </tbody>
+            </table>
           </div>
         </div>
+
+        <div className="scm-panel flex-1">
+          <div className="scm-panel-header">Geographic Context</div>
+          <div className="flex-1 relative">
+            <SCMMap 
+              nodes={warehouses}
+              selectedNodeId={selectedWH?.id}
+              onNodeSelect={setSelectedWH}
+              viewState={{ longitude: 78.9629, latitude: 20.5937, zoom: 3.5 }}
+            />
+          </div>
+        </div>
+
+        {selectedWH && (
+          <div className="scm-panel w-64 bg-gray-50 border-l border-gray-200">
+            <div className="scm-panel-header bg-gray-200/50">Details</div>
+            <div className="scm-panel-content">
+              <div className="text-xl font-black">{selectedWH.id}</div>
+              <div className="text-xs text-gray-500 uppercase font-semibold mb-4">{selectedWH.location || 'N/A'}</div>
+              
+              <div className="space-y-3">
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-gray-500">Utilization</div>
+                  <div className="h-2 w-full bg-gray-200 rounded-full mt-1 overflow-hidden">
+                    <div 
+                      className="h-full bg-[var(--sys-amber)]" 
+                      style={{ width: `${Math.min(100, ((selectedWH.current_inventory || 0) / (selectedWH.capacity || 1)) * 100)}%` }} 
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <div className="p-2 bg-white border border-gray-200 rounded text-center">
+                    <div className="text-xs text-gray-500">Op Cost</div>
+                    <div className="font-mono font-bold">{formatNumber(selectedWH.operating_cost)}</div>
+                  </div>
+                  <div className="p-2 bg-white border border-gray-200 rounded text-center">
+                    <div className="text-xs text-gray-500">Service</div>
+                    <div className="font-mono font-bold text-green-600">{(selectedWH.service_level ? selectedWH.service_level * 100 : 98).toFixed(1)}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
