@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root {
+  --sys-bg: #F5F5F0;
+  --sys-black: #1F2937;
+  --sys-white: #ffffff;
+  --sys-border: #1F2937;
+  
+  --sys-teal: #005662;
+  --sys-amber: #FFC000;
+  
+  --desk-gradient-1: #005662;
+  --desk-gradient-2: #00363e;
+  
+  --sage: #6F8F7E;
+  --ochre: #FFC000;
+  --brick: #A24A3B;
+  --slate: #5E7286;
+  --plum: #7A5C7E;
+}
+
+[data-color='blue'] {
+  --desk-gradient-1: #00363e;
+  --desk-gradient-2: #001f24;
+}
+
+[data-color='green'] {
+  --desk-gradient-1: #005662;
+  --desk-gradient-2: #008796;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  background: var(--sys-bg);
+  color: var(--sys-black);
+  font-family: var(--font-ibm-sans), sans-serif;
+  overflow: hidden;
+}
+
+/* CRT Scanlines */
+.crt-overlay {
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Window Chrome - HUL OS style */
+.os-window {
+  border: 1px solid var(--sys-black);
+  background: var(--sys-bg);
+  box-shadow: 2px 2px 0px rgba(31, 41, 55, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.os-window-inner {
+  border-top: 1px solid var(--sys-white);
+  border-left: 1px solid var(--sys-white);
+  border-right: 1px solid #c2c2c2;
+  border-bottom: 1px solid #c2c2c2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 1px;
+}
+
+.os-titlebar {
+  height: 24px;
+  background: var(--sys-teal);
+  border-bottom: 1px solid var(--sys-black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  color: var(--sys-white);
+}
+
+.os-titlebar.inactive {
+  background: #5E7286;
+  color: #c2c2c2;
+}
+
+.os-titlebar-text {
+  padding: 0 8px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.os-close-box {
+  width: 14px;
+  height: 14px;
+  background: var(--sys-white);
+  border: 1px solid var(--sys-black);
+  box-shadow: 1px 1px 0 var(--sys-black);
+  cursor: pointer;
+}
+
+.os-close-box:active {
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
+
+.os-zoom-box {
+  width: 14px;
+  height: 14px;
+  background: var(--sys-white);
+  border: 1px solid var(--sys-black);
+  box-shadow: 1px 1px 0 var(--sys-black);
+  cursor: pointer;
+}
+
+.os-zoom-box:active {
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
+
+.os-content {
+  background: var(--sys-white);
+  border: 1px solid var(--sys-black);
+  flex: 1;
+  margin: 2px;
+  overflow: auto;
+  font-family: var(--font-sans);
+}
+
+/* Desktop Icon Label */
+.desktop-icon-label {
+  background: rgba(245, 245, 240, 0.9);
+  border: 1px solid var(--sys-black);
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  padding: 2px 4px;
+  text-align: center;
+  margin-top: 4px;
+  box-shadow: 1px 1px 0 var(--sys-black);
+}
+
+.desktop-icon.selected .desktop-icon-label {
+  background: var(--sys-amber);
+  color: var(--sys-black);
+}
+
+.desktop-icon.selected svg {
+  filter: drop-shadow(2px 2px 0px var(--sys-amber));
+}
+
+/* Sticky Note */
+.sticky-note {
+  background: #FFF7D6;
+  border: 1px solid var(--sys-black);
+  box-shadow: 3px 3px 0 rgba(31, 41, 55, 0.5);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.sticky-header {
+  background: #FFEA8A;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+.sticky-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+
+/* Bottom Bar */
+.bottom-bar {
+  background: var(--sys-bg);
+  border-top: 1px solid var(--sys-black);
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+input, textarea, .selectable {
+  user-select: text;
+}
+@import "maplibre-gl/dist/maplibre-gl.css";

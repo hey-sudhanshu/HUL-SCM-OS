@@ -1,0 +1,61 @@
+
+ RUN  v1.6.0 /Users/sudhanshudeshmukh/Desktop/HUL-SCM-OS/apps/web
+
+ ✓ src/lib/calculator.test.ts > calculator logic > calculates freight cost accurately including detention
+ ✓ src/lib/calculator.test.ts > calculator logic > ranks alternate warehouses correctly with feasibility filters
+ ✓ src/lib/calculator.test.ts > calculator logic > asserts that ideal + time variance + detention === actual
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Known-answer test: EOQ, Safety Stock, ROP
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Service-level monotonicity
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Risk pooling (sqrt N effect)
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Holding-cost reconciliation
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > ABC cutoffs and XYZ thresholds
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Baseline vs optimized reconciliation
+ ✓ src/lib/inventory.test.ts > Inventory Lab Calculations > Determinism test (same seed -> same hash)
+ ✓ src/lib/evidence.test.ts > Evidence for User > prints evidence
+stdout | src/lib/evidence.test.ts > Evidence for User > prints evidence
+DEFAULT WEIGHTS (Top 5 for DIST-RAI):
+WH-RAI: 72.9
+WH-NAG: 71.4
+WH-HYD: 64.0
+WH-KOL: 62.8
+WH-LUC: 58.4
+
+CHANGED WEIGHTS (Headroom heavily weighted):
+WH-NAG: 58.3
+WH-KOL: 53.0
+WH-PAT: 48.5
+WH-RAI: 48.2
+WH-HYD: 47.2
+
+Freight (Total Landed): Plant -> WH-PUN -> DIST-RAI
+Upstream: 30km | Downstream: 1100km | Total: 1130km
+Denominator (t-km): 1130km x 16t = 18080 t-km
+Total Landed With Delay: ₹68158.25 | Ideal (Without Delay): ₹35083.25
+Ideal Cost per t-km = 35083.25 / 18080 = ₹1.94
+Actual Cost per t-km = 68158.25 / 18080 = ₹3.77
+Breakdown (Downstream Actual): Diesel ₹19690, Toll ₹2750, Fixed ₹10625, Driver ₹4250, Detention ₹24500, Handling ₹1600, Ins ₹1200
+Breakdown (Downstream Ideal): Fixed ₹4500, Driver ₹1800, Ins ₹1200
+Formulas:
+- Insurance = (Capacity * 150) * 0.05% = ₹1200
+- Cost per t-km = Total Cost / (Distance x Capacity_Tonnes)
+      
+
+Freight (Total Landed): Plant -> WH-NAG -> DIST-RAI
+Upstream: 715km | Downstream: 280km | Total: 995km
+Denominator (t-km): 995km x 16t = 15920 t-km
+Total Landed With Delay: ₹32126.13 | Ideal (Without Delay): ₹30776.13
+Ideal Cost per t-km = 30776.13 / 15920 = ₹1.93
+Actual Cost per t-km = 32126.13 / 15920 = ₹2.02
+Breakdown (Downstream Actual): Diesel ₹5012, Toll ₹700, Fixed ₹1500, Driver ₹600, Detention ₹1000, Handling ₹1600, Ins ₹1200
+Breakdown (Downstream Ideal): Fixed ₹1250, Driver ₹500, Ins ₹1200
+Formulas:
+- Insurance = (Capacity * 150) * 0.05% = ₹1200
+- Cost per t-km = Total Cost / (Distance x Capacity_Tonnes)
+      
+
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  15:45:17
+   Duration  953ms (transform 1.71s, setup 0ms, collect 1.76s, tests 76ms, environment 0ms, prepare 213ms)
+

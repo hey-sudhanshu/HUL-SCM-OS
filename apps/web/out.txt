@@ -1,0 +1,27 @@
+
+Top 10 Reorder Plan Rows (Urgency = ROP / Avail):
+SKU-005 @ WH-JAI | Avail: 0 | ROP: 304 | Order: 30769 | Urgency: 999.00
+SKU-014 @ DEP-37 | Avail: 0 | ROP: 194 | Order: 6639 | Urgency: 999.00
+SKU-014 @ DEP-13 | Avail: 0 | ROP: 194 | Order: 6639 | Urgency: 999.00
+SKU-014 @ DIST-4 | Avail: 0 | ROP: 194 | Order: 6639 | Urgency: 999.00
+SKU-014 @ DIST-9 | Avail: 0 | ROP: 194 | Order: 6639 | Urgency: 999.00
+SKU-021 @ DEP-1 | Avail: 0 | ROP: 143 | Order: 3375 | Urgency: 999.00
+SKU-021 @ WH-NAG | Avail: 0 | ROP: 143 | Order: 3375 | Urgency: 999.00
+SKU-021 @ DEP-17 | Avail: 0 | ROP: 143 | Order: 3375 | Urgency: 999.00
+SKU-021 @ DEP-22 | Avail: 0 | ROP: 143 | Order: 3375 | Urgency: 999.00
+SKU-021 @ DIST-32 | Avail: 0 | ROP: 143 | Order: 3375 | Urgency: 999.00
+
+Excess Stock List (Days of Cover > 90):
+
+FEFO / Near-Expiry List (Shelf Life < 30 days):
+SKU-000 @ WH-PUN | Expiry in: 15 days
+SKU-000 @ DEP-31 | Expiry in: 27 days
+SKU-000 @ DEP-7 | Expiry in: 16 days
+SKU-000 @ DEP-3 | Expiry in: 29 days
+SKU-000 @ DEP-28 | Expiry in: 27 days
+
+=== PER-CLASS TABLE ===
+Class A (39 SKUs): Base 30.0 days (₹445.4M) | Opt 16.4 days (₹244.0M) | Reduction: 45.2%
+Class B (36 SKUs): Base 30.0 days (₹86.7M) | Opt 26.0 days (₹75.1M) | Reduction: 13.4%
+Class C (75 SKUs): Base 30.0 days (₹28.8M) | Opt 21.4 days (₹20.6M) | Reduction: 28.7%
+Total: Base 30 days (₹561.0M) | Opt 18.2 days (₹339.7M) | Reduction: 39.4%

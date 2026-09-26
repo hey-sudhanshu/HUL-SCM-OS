@@ -1,0 +1,870 @@
+{
+  "k_shortest": {
+    "PL-HAL_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAL",
+            "WH-PUN"
+          ],
+          "total_cost": 84526.93,
+          "total_distance": 2113.2,
+          "total_time": 51.7,
+          "edges": [
+            {
+              "source": "PL-HAL",
+              "target": "WH-PUN",
+              "cost": 84526.93,
+              "distance": 2113.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-HAL_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAL",
+            "WH-NAG"
+          ],
+          "total_cost": 52103.87,
+          "total_distance": 1302.6,
+          "total_time": 31.8,
+          "edges": [
+            {
+              "source": "PL-HAL",
+              "target": "WH-NAG",
+              "cost": 52103.87,
+              "distance": 1302.6
+            }
+          ]
+        }
+      ]
+    },
+    "PL-HAL_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAL",
+            "WH-RAI"
+          ],
+          "total_cost": 37407.28,
+          "total_distance": 935.2,
+          "total_time": 22.9,
+          "edges": [
+            {
+              "source": "PL-HAL",
+              "target": "WH-RAI",
+              "cost": 37407.28,
+              "distance": 935.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MUM_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-MUM",
+            "WH-PUN"
+          ],
+          "total_cost": 6486.51,
+          "total_distance": 162.2,
+          "total_time": 4.0,
+          "edges": [
+            {
+              "source": "PL-MUM",
+              "target": "WH-PUN",
+              "cost": 6486.51,
+              "distance": 162.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MUM_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-MUM",
+            "WH-NAG"
+          ],
+          "total_cost": 37783.02,
+          "total_distance": 944.6,
+          "total_time": 23.1,
+          "edges": [
+            {
+              "source": "PL-MUM",
+              "target": "WH-NAG",
+              "cost": 37783.02,
+              "distance": 944.6
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MUM_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-MUM",
+            "WH-RAI"
+          ],
+          "total_cost": 52104.89,
+          "total_distance": 1302.6,
+          "total_time": 31.8,
+          "edges": [
+            {
+              "source": "PL-MUM",
+              "target": "WH-RAI",
+              "cost": 52104.89,
+              "distance": 1302.6
+            }
+          ]
+        }
+      ]
+    },
+    "PL-CHE_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-CHE",
+            "WH-PUN"
+          ],
+          "total_cost": 48570.62,
+          "total_distance": 1214.3,
+          "total_time": 29.7,
+          "edges": [
+            {
+              "source": "PL-CHE",
+              "target": "WH-PUN",
+              "cost": 48570.62,
+              "distance": 1214.3
+            }
+          ]
+        }
+      ]
+    },
+    "PL-CHE_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-CHE",
+            "WH-NAG"
+          ],
+          "total_cost": 47026.64,
+          "total_distance": 1175.7,
+          "total_time": 28.7,
+          "edges": [
+            {
+              "source": "PL-CHE",
+              "target": "WH-NAG",
+              "cost": 47026.64,
+              "distance": 1175.7
+            }
+          ]
+        }
+      ]
+    },
+    "PL-CHE_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-CHE",
+            "WH-RAI"
+          ],
+          "total_cost": 47806.13,
+          "total_distance": 1195.2,
+          "total_time": 29.2,
+          "edges": [
+            {
+              "source": "PL-CHE",
+              "target": "WH-RAI",
+              "cost": 47806.13,
+              "distance": 1195.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-DEL_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-DEL",
+            "WH-PUN"
+          ],
+          "total_cost": 61365.51,
+          "total_distance": 1534.1,
+          "total_time": 37.5,
+          "edges": [
+            {
+              "source": "PL-DEL",
+              "target": "WH-PUN",
+              "cost": 61365.51,
+              "distance": 1534.1
+            }
+          ]
+        }
+      ]
+    },
+    "PL-DEL_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-DEL",
+            "WH-NAG"
+          ],
+          "total_cost": 44461.38,
+          "total_distance": 1111.5,
+          "total_time": 27.2,
+          "edges": [
+            {
+              "source": "PL-DEL",
+              "target": "WH-NAG",
+              "cost": 44461.38,
+              "distance": 1111.5
+            }
+          ]
+        }
+      ]
+    },
+    "PL-DEL_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-DEL",
+            "WH-RAI"
+          ],
+          "total_cost": 49583.63,
+          "total_distance": 1239.6,
+          "total_time": 30.3,
+          "edges": [
+            {
+              "source": "PL-DEL",
+              "target": "WH-RAI",
+              "cost": 49583.63,
+              "distance": 1239.6
+            }
+          ]
+        }
+      ]
+    },
+    "PL-NAS_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-NAS",
+            "WH-PUN"
+          ],
+          "total_cost": 9062.11,
+          "total_distance": 226.6,
+          "total_time": 5.5,
+          "edges": [
+            {
+              "source": "PL-NAS",
+              "target": "WH-PUN",
+              "cost": 9062.11,
+              "distance": 226.6
+            }
+          ]
+        }
+      ]
+    },
+    "PL-NAS_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-NAS",
+            "WH-NAG"
+          ],
+          "total_cost": 28933.72,
+          "total_distance": 723.3,
+          "total_time": 17.7,
+          "edges": [
+            {
+              "source": "PL-NAS",
+              "target": "WH-NAG",
+              "cost": 28933.72,
+              "distance": 723.3
+            }
+          ]
+        }
+      ]
+    },
+    "PL-NAS_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-NAS",
+            "WH-RAI"
+          ],
+          "total_cost": 43516.04,
+          "total_distance": 1087.9,
+          "total_time": 26.6,
+          "edges": [
+            {
+              "source": "PL-NAS",
+              "target": "WH-RAI",
+              "cost": 43516.04,
+              "distance": 1087.9
+            }
+          ]
+        }
+      ]
+    },
+    "PL-HAR_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAR",
+            "WH-PUN"
+          ],
+          "total_cost": 30217.43,
+          "total_distance": 755.4,
+          "total_time": 18.5,
+          "edges": [
+            {
+              "source": "PL-HAR",
+              "target": "WH-PUN",
+              "cost": 30217.43,
+              "distance": 755.4
+            }
+          ]
+        }
+      ]
+    },
+    "PL-HAR_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAR",
+            "WH-NAG"
+          ],
+          "total_cost": 10316.39,
+          "total_distance": 257.9,
+          "total_time": 6.3,
+          "edges": [
+            {
+              "source": "PL-HAR",
+              "target": "WH-NAG",
+              "cost": 10316.39,
+              "distance": 257.9
+            }
+          ]
+        }
+      ]
+    },
+    "PL-HAR_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-HAR",
+            "WH-RAI"
+          ],
+          "total_cost": 23776.97,
+          "total_distance": 594.4,
+          "total_time": 14.5,
+          "edges": [
+            {
+              "source": "PL-HAR",
+              "target": "WH-RAI",
+              "cost": 23776.97,
+              "distance": 594.4
+            }
+          ]
+        }
+      ]
+    },
+    "PL-BAD_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-BAD",
+            "WH-PUN"
+          ],
+          "total_cost": 22120.07,
+          "total_distance": 553.0,
+          "total_time": 13.5,
+          "edges": [
+            {
+              "source": "PL-BAD",
+              "target": "WH-PUN",
+              "cost": 22120.07,
+              "distance": 553.0
+            }
+          ]
+        }
+      ]
+    },
+    "PL-BAD_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-BAD",
+            "WH-NAG"
+          ],
+          "total_cost": 24588.79,
+          "total_distance": 614.7,
+          "total_time": 15.0,
+          "edges": [
+            {
+              "source": "PL-BAD",
+              "target": "WH-NAG",
+              "cost": 24588.79,
+              "distance": 614.7
+            }
+          ]
+        }
+      ]
+    },
+    "PL-BAD_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-BAD",
+            "WH-RAI"
+          ],
+          "total_cost": 33579.01,
+          "total_distance": 839.5,
+          "total_time": 20.5,
+          "edges": [
+            {
+              "source": "PL-BAD",
+              "target": "WH-RAI",
+              "cost": 33579.01,
+              "distance": 839.5
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MYS_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-MYS",
+            "WH-PUN"
+          ],
+          "total_cost": 30339.21,
+          "total_distance": 758.5,
+          "total_time": 18.5,
+          "edges": [
+            {
+              "source": "PL-MYS",
+              "target": "WH-PUN",
+              "cost": 30339.21,
+              "distance": 758.5
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MYS_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-MYS",
+            "WH-NAG"
+          ],
+          "total_cost": 28855.05,
+          "total_distance": 721.4,
+          "total_time": 17.6,
+          "edges": [
+            {
+              "source": "PL-MYS",
+              "target": "WH-NAG",
+              "cost": 28855.05,
+              "distance": 721.4
+            }
+          ]
+        }
+      ]
+    },
+    "PL-MYS_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-MYS",
+            "WH-RAI"
+          ],
+          "total_cost": 41967.1,
+          "total_distance": 1049.2,
+          "total_time": 25.6,
+          "edges": [
+            {
+              "source": "PL-MYS",
+              "target": "WH-RAI",
+              "cost": 41967.1,
+              "distance": 1049.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-SIL_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-SIL",
+            "WH-PUN"
+          ],
+          "total_cost": 41027.07,
+          "total_distance": 1025.7,
+          "total_time": 25.1,
+          "edges": [
+            {
+              "source": "PL-SIL",
+              "target": "WH-PUN",
+              "cost": 41027.07,
+              "distance": 1025.7
+            }
+          ]
+        }
+      ]
+    },
+    "PL-SIL_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-SIL",
+            "WH-NAG"
+          ],
+          "total_cost": 7447.46,
+          "total_distance": 186.2,
+          "total_time": 4.6,
+          "edges": [
+            {
+              "source": "PL-SIL",
+              "target": "WH-NAG",
+              "cost": 7447.46,
+              "distance": 186.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-SIL_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-SIL",
+            "WH-RAI"
+          ],
+          "total_cost": 10006.58,
+          "total_distance": 250.2,
+          "total_time": 6.1,
+          "edges": [
+            {
+              "source": "PL-SIL",
+              "target": "WH-RAI",
+              "cost": 10006.58,
+              "distance": 250.2
+            }
+          ]
+        }
+      ]
+    },
+    "PL-PUN_WH-PUN": {
+      "paths": [
+        {
+          "path": [
+            "PL-PUN",
+            "WH-PUN"
+          ],
+          "total_cost": 0.0,
+          "total_distance": 0.0,
+          "total_time": 0.0,
+          "edges": [
+            {
+              "source": "PL-PUN",
+              "target": "WH-PUN",
+              "cost": 0.0,
+              "distance": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "PL-PUN_WH-NAG": {
+      "paths": [
+        {
+          "path": [
+            "PL-PUN",
+            "WH-NAG"
+          ],
+          "total_cost": 33763.63,
+          "total_distance": 844.1,
+          "total_time": 20.6,
+          "edges": [
+            {
+              "source": "PL-PUN",
+              "target": "WH-NAG",
+              "cost": 33763.63,
+              "distance": 844.1
+            }
+          ]
+        }
+      ]
+    },
+    "PL-PUN_WH-RAI": {
+      "paths": [
+        {
+          "path": [
+            "PL-PUN",
+            "WH-RAI"
+          ],
+          "total_cost": 47590.59,
+          "total_distance": 1189.8,
+          "total_time": 29.1,
+          "edges": [
+            {
+              "source": "PL-PUN",
+              "target": "WH-RAI",
+              "cost": 47590.59,
+              "distance": 1189.8
+            }
+          ]
+        }
+      ]
+    },
+    "WH-PUN_DIST-RAI": {
+      "paths": [
+        {
+          "path": [
+            "WH-PUN",
+            "DIST-RAI"
+          ],
+          "total_cost": 55000.0,
+          "total_distance": 1100.0,
+          "total_time": 85.0,
+          "edges": [
+            {
+              "source": "WH-PUN",
+              "target": "DIST-RAI",
+              "cost": 55000.0,
+              "distance": 1100.0
+            }
+          ]
+        }
+      ]
+    },
+    "WH-NAG_DIST-RAI": {
+      "paths": [
+        {
+          "path": [
+            "WH-NAG",
+            "DIST-RAI"
+          ],
+          "total_cost": 15000.0,
+          "total_distance": 280.0,
+          "total_time": 12.0,
+          "edges": [
+            {
+              "source": "WH-NAG",
+              "target": "DIST-RAI",
+              "cost": 15000.0,
+              "distance": 280.0
+            }
+          ]
+        }
+      ]
+    },
+    "WH-PUN_DIST-1": {
+      "paths": [
+        {
+          "path": [
+            "WH-PUN",
+            "DIST-1"
+          ],
+          "total_cost": 43716.08,
+          "total_distance": 1457.2,
+          "total_time": 43.7,
+          "edges": [
+            {
+              "source": "WH-PUN",
+              "target": "DIST-1",
+              "cost": 43716.08,
+              "distance": 1457.2
+            }
+          ]
+        }
+      ]
+    },
+    "WH-PUN_DIST-2": {
+      "paths": [
+        {
+          "path": [
+            "WH-PUN",
+            "DIST-2"
+          ],
+          "total_cost": 54980.45,
+          "total_distance": 1832.7,
+          "total_time": 55.0,
+          "edges": [
+            {
+              "source": "WH-PUN",
+              "target": "DIST-2",
+              "cost": 54980.45,
+              "distance": 1832.7
+            }
+          ]
+        }
+      ]
+    },
+    "WH-NAG_DIST-1": {
+      "paths": [
+        {
+          "path": [
+            "WH-NAG",
+            "DIST-1"
+          ],
+          "total_cost": 40016.58,
+          "total_distance": 1333.9,
+          "total_time": 40.0,
+          "edges": [
+            {
+              "source": "WH-NAG",
+              "target": "DIST-1",
+              "cost": 40016.58,
+              "distance": 1333.9
+            }
+          ]
+        }
+      ]
+    },
+    "WH-NAG_DIST-2": {
+      "paths": [
+        {
+          "path": [
+            "WH-NAG",
+            "DIST-2"
+          ],
+          "total_cost": 31644.43,
+          "total_distance": 1054.8,
+          "total_time": 31.6,
+          "edges": [
+            {
+              "source": "WH-NAG",
+              "target": "DIST-2",
+              "cost": 31644.43,
+              "distance": 1054.8
+            }
+          ]
+        }
+      ]
+    },
+    "WH-RAI_DIST-RAI": {
+      "paths": [
+        {
+          "path": [
+            "WH-RAI",
+            "DIST-RAI"
+          ],
+          "total_cost": 0.0,
+          "total_distance": 0.0,
+          "total_time": 0.0,
+          "edges": [
+            {
+              "source": "WH-RAI",
+              "target": "DIST-RAI",
+              "cost": 0.0,
+              "distance": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "WH-RAI_DIST-1": {
+      "paths": [
+        {
+          "path": [
+            "WH-RAI",
+            "DIST-1"
+          ],
+          "total_cost": 47033.64,
+          "total_distance": 1567.8,
+          "total_time": 47.0,
+          "edges": [
+            {
+              "source": "WH-RAI",
+              "target": "DIST-1",
+              "cost": 47033.64,
+              "distance": 1567.8
+            }
+          ]
+        }
+      ]
+    },
+    "WH-RAI_DIST-2": {
+      "paths": [
+        {
+          "path": [
+            "WH-RAI",
+            "DIST-2"
+          ],
+          "total_cost": 26818.05,
+          "total_distance": 893.9,
+          "total_time": 26.8,
+          "edges": [
+            {
+              "source": "WH-RAI",
+              "target": "DIST-2",
+              "cost": 26818.05,
+              "distance": 893.9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "cvrp_nagpur": {
+    "status": "optimal",
+    "routes": [
+      {
+        "vehicle": 1,
+        "route": [
+          "WH-NAG",
+          "DIST-NGP1",
+          "DIST-BPL",
+          "DIST-JBP",
+          "DIST-RAI",
+          "DIST-NGP2",
+          "WH-NAG"
+        ],
+        "distance": 0
+      }
+    ],
+    "total_distance": 0
+  },
+  "bin_packing_demo": {
+    "bins": [
+      {
+        "id": 0,
+        "items": [
+          6,
+          0,
+          1,
+          4
+        ],
+        "weight": 16000.0,
+        "volume": 40.0
+      },
+      {
+        "id": 1,
+        "items": [
+          8,
+          2,
+          5,
+          7,
+          3
+        ],
+        "weight": 9000.0,
+        "volume": 22.5
+      }
+    ],
+    "total_bins": 2
+  }
+}

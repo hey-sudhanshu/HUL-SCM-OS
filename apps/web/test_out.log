@@ -1,0 +1,11 @@
+node:internal/process/esm_loader:34
+      internalBinding('errors').triggerUncaughtException(
+                                ^
+
+[Error: ETIMEDOUT: connection timed out, read] {
+  errno: -60,
+  code: 'ETIMEDOUT',
+  syscall: 'read'
+}
+
+Node.js v20.11.0

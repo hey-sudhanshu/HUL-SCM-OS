@@ -1,0 +1,98 @@
+{
+  "dispatch_nagpur": {
+    "status": "optimal",
+    "routes": [
+      {
+        "vehicle": 0,
+        "schedule": [
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 0,
+            "departure_time": 0
+          },
+          {
+            "loc": "DIST-144",
+            "arrival_time": 2,
+            "departure_time": 3
+          },
+          {
+            "loc": "DIST-76",
+            "arrival_time": 6,
+            "departure_time": 7
+          },
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 9,
+            "departure_time": 9
+          }
+        ]
+      },
+      {
+        "vehicle": 1,
+        "schedule": [
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 0,
+            "departure_time": 0
+          },
+          {
+            "loc": "DIST-19",
+            "arrival_time": 1,
+            "departure_time": 2
+          },
+          {
+            "loc": "DIST-42",
+            "arrival_time": 5,
+            "departure_time": 6
+          },
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 9,
+            "departure_time": 9
+          }
+        ]
+      },
+      {
+        "vehicle": 2,
+        "schedule": [
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 0,
+            "departure_time": 0
+          },
+          {
+            "loc": "DIST-37",
+            "arrival_time": 4,
+            "departure_time": 5
+          },
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 8,
+            "departure_time": 8
+          }
+        ]
+      },
+      {
+        "vehicle": 3,
+        "schedule": [
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 0,
+            "departure_time": 0
+          },
+          {
+            "loc": "DIST-12",
+            "arrival_time": 4,
+            "departure_time": 5
+          },
+          {
+            "loc": "WH-NAG",
+            "arrival_time": 8,
+            "departure_time": 8
+          }
+        ]
+      }
+    ],
+    "total_time": 34
+  }
+}

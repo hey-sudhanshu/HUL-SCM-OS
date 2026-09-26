@@ -1,0 +1,646 @@
+{
+  "$defs": {
+    "CostParameters": {
+      "properties": {
+        "diesel_price_per_liter": {
+          "title": "Diesel Price Per Liter",
+          "type": "number"
+        },
+        "toll_per_km": {
+          "title": "Toll Per Km",
+          "type": "number"
+        },
+        "capital_cost_rate_pct": {
+          "title": "Capital Cost Rate Pct",
+          "type": "number"
+        },
+        "storage_cost_per_pallet_day": {
+          "title": "Storage Cost Per Pallet Day",
+          "type": "number"
+        },
+        "insurance_rate_pct": {
+          "title": "Insurance Rate Pct",
+          "type": "number"
+        },
+        "shrinkage_obsolescence_pct": {
+          "title": "Shrinkage Obsolescence Pct",
+          "type": "number"
+        },
+        "detention_cost_per_hour": {
+          "title": "Detention Cost Per Hour",
+          "type": "number"
+        },
+        "emission_factor_kg_co2_per_km": {
+          "title": "Emission Factor Kg Co2 Per Km",
+          "type": "number"
+        },
+        "driver_cost_per_day": {
+          "title": "Driver Cost Per Day",
+          "type": "number"
+        },
+        "fixed_vehicle_cost_per_day": {
+          "title": "Fixed Vehicle Cost Per Day",
+          "type": "number"
+        },
+        "handling_cost_per_pallet": {
+          "title": "Handling Cost Per Pallet",
+          "type": "number"
+        },
+        "configurable": {
+          "title": "Configurable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "diesel_price_per_liter",
+        "toll_per_km",
+        "capital_cost_rate_pct",
+        "storage_cost_per_pallet_day",
+        "insurance_rate_pct",
+        "shrinkage_obsolescence_pct",
+        "detention_cost_per_hour",
+        "emission_factor_kg_co2_per_km",
+        "driver_cost_per_day",
+        "fixed_vehicle_cost_per_day",
+        "handling_cost_per_pallet",
+        "configurable"
+      ],
+      "title": "CostParameters",
+      "type": "object"
+    },
+    "DelayDecomposition": {
+      "properties": {
+        "transit": {
+          "title": "Transit",
+          "type": "number"
+        },
+        "hub_dwell": {
+          "title": "Hub Dwell",
+          "type": "number"
+        },
+        "ghat_road": {
+          "title": "Ghat Road",
+          "type": "number"
+        },
+        "weather": {
+          "title": "Weather",
+          "type": "number"
+        },
+        "checkpoint": {
+          "title": "Checkpoint",
+          "type": "number"
+        }
+      },
+      "required": [
+        "transit",
+        "hub_dwell",
+        "ghat_road",
+        "weather",
+        "checkpoint"
+      ],
+      "title": "DelayDecomposition",
+      "type": "object"
+    },
+    "Distributor": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "cluster_name": {
+          "title": "Cluster Name",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "cluster_name",
+        "coordinates"
+      ],
+      "title": "Distributor",
+      "type": "object"
+    },
+    "Fleet": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "capacity_kg": {
+          "title": "Capacity Kg",
+          "type": "number"
+        },
+        "capacity_m3": {
+          "title": "Capacity M3",
+          "type": "number"
+        },
+        "cost_per_km": {
+          "title": "Cost Per Km",
+          "type": "number"
+        },
+        "fixed_cost_per_trip": {
+          "title": "Fixed Cost Per Trip",
+          "type": "number"
+        },
+        "configurable": {
+          "title": "Configurable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "capacity_kg",
+        "capacity_m3",
+        "cost_per_km",
+        "fixed_cost_per_trip",
+        "configurable"
+      ],
+      "title": "Fleet",
+      "type": "object"
+    },
+    "InventoryRecord": {
+      "properties": {
+        "sku_id": {
+          "title": "Sku Id",
+          "type": "string"
+        },
+        "cfa_id": {
+          "title": "Cfa Id",
+          "type": "string"
+        },
+        "on_hand": {
+          "title": "On Hand",
+          "type": "integer"
+        },
+        "in_transit": {
+          "title": "In Transit",
+          "type": "integer"
+        },
+        "days_of_cover": {
+          "title": "Days Of Cover",
+          "type": "number"
+        },
+        "story": {
+          "default": "Normal",
+          "title": "Story",
+          "type": "string"
+        },
+        "shelf_life_remaining_days": {
+          "title": "Shelf Life Remaining Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sku_id",
+        "cfa_id",
+        "on_hand",
+        "in_transit",
+        "days_of_cover",
+        "shelf_life_remaining_days"
+      ],
+      "title": "InventoryRecord",
+      "type": "object"
+    },
+    "Lane": {
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "dest_id": {
+          "title": "Dest Id",
+          "type": "string"
+        },
+        "distance_km": {
+          "title": "Distance Km",
+          "type": "number"
+        },
+        "planned_transit_hours": {
+          "title": "Planned Transit Hours",
+          "type": "number"
+        },
+        "actual_transit_mean": {
+          "title": "Actual Transit Mean",
+          "type": "number"
+        },
+        "actual_transit_std": {
+          "title": "Actual Transit Std",
+          "type": "number"
+        },
+        "cost_per_trip": {
+          "title": "Cost Per Trip",
+          "type": "number"
+        },
+        "monsoon_vulnerable": {
+          "title": "Monsoon Vulnerable",
+          "type": "boolean"
+        },
+        "monsoon_delay_multiplier": {
+          "title": "Monsoon Delay Multiplier",
+          "type": "number"
+        },
+        "delay_causes": {
+          "$ref": "#/$defs/DelayDecomposition"
+        }
+      },
+      "required": [
+        "source_id",
+        "dest_id",
+        "distance_km",
+        "planned_transit_hours",
+        "actual_transit_mean",
+        "actual_transit_std",
+        "cost_per_trip",
+        "monsoon_vulnerable",
+        "monsoon_delay_multiplier",
+        "delay_causes"
+      ],
+      "title": "Lane",
+      "type": "object"
+    },
+    "Material": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "material_group": {
+          "title": "Material Group",
+          "type": "string"
+        },
+        "annual_spend": {
+          "title": "Annual Spend",
+          "type": "number"
+        },
+        "supplier_count": {
+          "title": "Supplier Count",
+          "type": "integer"
+        },
+        "switching_cost": {
+          "title": "Switching Cost",
+          "type": "number"
+        },
+        "lead_time_days": {
+          "title": "Lead Time Days",
+          "type": "integer"
+        },
+        "lead_time_variability": {
+          "title": "Lead Time Variability",
+          "type": "number"
+        },
+        "is_single_source": {
+          "title": "Is Single Source",
+          "type": "boolean"
+        },
+        "region": {
+          "title": "Region",
+          "type": "string"
+        },
+        "geographic_exposure": {
+          "title": "Geographic Exposure",
+          "type": "number"
+        },
+        "share_of_spend": {
+          "title": "Share Of Spend",
+          "type": "number"
+        },
+        "effect_on_product_cost": {
+          "title": "Effect On Product Cost",
+          "type": "number"
+        },
+        "revenue_criticality": {
+          "title": "Revenue Criticality",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "material_group",
+        "annual_spend",
+        "supplier_count",
+        "switching_cost",
+        "lead_time_days",
+        "lead_time_variability",
+        "is_single_source",
+        "region",
+        "geographic_exposure",
+        "share_of_spend",
+        "effect_on_product_cost",
+        "revenue_criticality"
+      ],
+      "title": "Material",
+      "type": "object"
+    },
+    "Plant": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "capacity_pallets": {
+          "title": "Capacity Pallets",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "location",
+        "coordinates",
+        "capacity_pallets"
+      ],
+      "title": "Plant",
+      "type": "object"
+    },
+    "Risk": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "likelihood": {
+          "title": "Likelihood",
+          "type": "number"
+        },
+        "impact": {
+          "title": "Impact",
+          "type": "number"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "owner": {
+          "title": "Owner",
+          "type": "string"
+        },
+        "mitigation": {
+          "title": "Mitigation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "likelihood",
+        "impact",
+        "category",
+        "owner",
+        "mitigation"
+      ],
+      "title": "Risk",
+      "type": "object"
+    },
+    "SKU": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "brand": {
+          "title": "Brand",
+          "type": "string"
+        },
+        "pack": {
+          "title": "Pack",
+          "type": "string"
+        },
+        "weight_kg": {
+          "title": "Weight Kg",
+          "type": "number"
+        },
+        "volume_m3": {
+          "title": "Volume M3",
+          "type": "number"
+        },
+        "unit_cost": {
+          "title": "Unit Cost",
+          "type": "number"
+        },
+        "shelf_life_days": {
+          "title": "Shelf Life Days",
+          "type": "integer"
+        },
+        "velocity_class": {
+          "title": "Velocity Class",
+          "type": "string"
+        },
+        "seasonality": {
+          "title": "Seasonality",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "brand",
+        "pack",
+        "weight_kg",
+        "volume_m3",
+        "unit_cost",
+        "shelf_life_days",
+        "velocity_class",
+        "seasonality"
+      ],
+      "title": "SKU",
+      "type": "object"
+    },
+    "Warehouse": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "capacity_pallets": {
+          "title": "Capacity Pallets",
+          "type": "integer"
+        },
+        "operating_cost_per_pallet": {
+          "title": "Operating Cost Per Pallet",
+          "type": "number"
+        },
+        "dock_count": {
+          "title": "Dock Count",
+          "type": "integer"
+        },
+        "utilization_pct": {
+          "title": "Utilization Pct",
+          "type": "number"
+        },
+        "status": {
+          "default": "active",
+          "title": "Status",
+          "type": "string"
+        },
+        "setup_cost": {
+          "default": 0.0,
+          "title": "Setup Cost",
+          "type": "number"
+        },
+        "lead_time_months": {
+          "default": 0,
+          "title": "Lead Time Months",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "coordinates",
+        "capacity_pallets",
+        "operating_cost_per_pallet",
+        "dock_count",
+        "utilization_pct"
+      ],
+      "title": "Warehouse",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "cost_parameters": {
+      "$ref": "#/$defs/CostParameters"
+    },
+    "materials": {
+      "items": {
+        "$ref": "#/$defs/Material"
+      },
+      "title": "Materials",
+      "type": "array"
+    },
+    "plants": {
+      "items": {
+        "$ref": "#/$defs/Plant"
+      },
+      "title": "Plants",
+      "type": "array"
+    },
+    "warehouses": {
+      "items": {
+        "$ref": "#/$defs/Warehouse"
+      },
+      "title": "Warehouses",
+      "type": "array"
+    },
+    "distributors": {
+      "items": {
+        "$ref": "#/$defs/Distributor"
+      },
+      "title": "Distributors",
+      "type": "array"
+    },
+    "skus": {
+      "items": {
+        "$ref": "#/$defs/SKU"
+      },
+      "title": "Skus",
+      "type": "array"
+    },
+    "fleet": {
+      "items": {
+        "$ref": "#/$defs/Fleet"
+      },
+      "title": "Fleet",
+      "type": "array"
+    },
+    "risks": {
+      "items": {
+        "$ref": "#/$defs/Risk"
+      },
+      "title": "Risks",
+      "type": "array"
+    },
+    "lanes": {
+      "items": {
+        "$ref": "#/$defs/Lane"
+      },
+      "title": "Lanes",
+      "type": "array"
+    },
+    "demand_history": {
+      "additionalProperties": {
+        "additionalProperties": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "type": "object"
+      },
+      "title": "Demand History",
+      "type": "object"
+    },
+    "inventory_snapshot": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/InventoryRecord"
+      },
+      "title": "Inventory Snapshot",
+      "type": "array"
+    }
+  },
+  "required": [
+    "cost_parameters",
+    "materials",
+    "plants",
+    "warehouses",
+    "distributors",
+    "skus",
+    "fleet",
+    "risks",
+    "lanes",
+    "demand_history"
+  ],
+  "title": "NetworkData",
+  "type": "object"
+}
