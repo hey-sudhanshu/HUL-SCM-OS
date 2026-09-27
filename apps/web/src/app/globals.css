@@ -1,145 +1,81 @@
-@import "maplibre-gl/dist/maplibre-gl.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
 :root {
-  --sys-bg: #eef1f4;
-  --sys-black: #111827;
-  --sys-white: #ffffff;
-  --sys-border: #d1d5db;
-  --sys-teal: #0f766e;
-  --sys-amber: #d97706;
+  --hul-teal: #0a6e5c;
+  --hul-gold: #d4a843;
+  --hul-navy: #1a1f36;
+  --hul-slate: #f1f3f5;
+  --hul-border: #2a2f45;
   
-  --font-ibm-sans: "IBM Plex Sans", -apple-system, sans-serif;
-  --font-ibm-mono: "IBM Plex Mono", monospace;
+  --status-green: #22c55e;
+  --status-amber: #f59e0b;
+  --status-red: #ef4444;
+  --status-blue: #3b82f6;
+  
+  --bg-dark: #0f1219;
+  --bg-panel: #161a23;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
 }
 
 body {
-  font-family: var(--font-ibm-sans);
-  background: var(--sys-bg);
-  color: var(--sys-black);
   margin: 0;
-  overflow: hidden;
+  padding: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden; /* Desktop OS style */
 }
 
-/* Base Window Classes */
+/* Scrollbar utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Window system */
 .os-window {
-  @apply rounded shadow-xl flex flex-col bg-white border border-gray-300 overflow-hidden ring-1 ring-black/5;
+  @apply flex flex-col bg-[#161a23] border border-[#2a2f45] shadow-2xl rounded overflow-hidden;
 }
-
 .os-titlebar {
-  @apply h-8 bg-gray-100 border-b border-gray-200 flex items-center px-3 justify-between font-bold text-xs tracking-wide text-gray-700 cursor-default;
+  @apply flex items-center justify-between h-8 px-3 bg-[#0f1219] border-b border-[#2a2f45] text-xs select-none;
 }
-
-.os-titlebar.inactive {
-  @apply bg-white text-gray-400 opacity-90;
-}
-
-.os-close-box {
-  @apply w-3 h-3 rounded-full bg-red-500 border border-red-600 hover:bg-red-600 cursor-pointer transition-colors shadow-sm;
-}
-
-.os-zoom-box {
-  @apply w-3 h-3 rounded-full bg-green-500 border border-green-600 hover:bg-green-600 cursor-pointer transition-colors shadow-sm;
-}
-
-.os-titlebar-text {
-  @apply pointer-events-none uppercase text-[10px] tracking-widest text-center flex-1 font-sans;
-}
-
 .os-content {
-  @apply flex-1 overflow-auto bg-white flex flex-col font-sans;
+  @apply flex-1 overflow-auto bg-[#161a23];
 }
 
-/* App Specific - Dense Grid */
-.scm-app-layout {
-  @apply flex flex-col h-full w-full bg-[#f8fafc];
+/* Application Layout */
+.scm-app {
+  @apply flex flex-col h-full w-full bg-[#161a23] text-sm;
 }
-
 .scm-header {
-  @apply px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between shrink-0 shadow-sm;
+  @apply flex items-center justify-between p-4 border-b border-[#2a2f45] bg-[#0f1219];
 }
-
-.scm-header-title {
-  @apply text-sm font-bold text-gray-900 tracking-tight flex items-center gap-2;
-}
-
-.scm-toolbar {
-  @apply px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-3 shrink-0 text-xs text-gray-700;
-}
-
 .scm-kpi-strip {
-  @apply flex items-stretch border-b border-gray-200 bg-white shrink-0;
+  @apply grid grid-cols-4 gap-4 p-4 border-b border-[#2a2f45] bg-[#1a1f36];
 }
-
 .scm-kpi-card {
-  @apply flex-1 px-4 py-2 border-r border-gray-100 last:border-r-0 flex flex-col justify-center;
+  @apply flex flex-col p-3 rounded border border-[#2a2f45] bg-[#161a23];
 }
-.scm-kpi-label {
-  @apply text-[10px] uppercase font-bold text-gray-500 tracking-wider mb-1;
-}
-.scm-kpi-value {
-  @apply text-lg font-bold text-gray-900 tracking-tight font-mono;
-}
-.scm-kpi-trend {
-  @apply text-xs font-semibold mt-0.5 flex items-center gap-1;
-}
-.scm-kpi-trend.positive { @apply text-green-600; }
-.scm-kpi-trend.negative { @apply text-red-600; }
-.scm-kpi-trend.neutral { @apply text-gray-500; }
-
-.scm-main {
-  @apply flex-1 flex overflow-hidden;
-}
-
 .scm-panel {
-  @apply flex flex-col bg-white border-r border-gray-200 overflow-hidden relative;
-}
-
-.scm-panel-header {
-  @apply px-3 py-2 bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-800 uppercase tracking-wider shrink-0;
-}
-
-.scm-panel-content {
-  @apply flex-1 overflow-y-auto p-3 text-sm;
-}
-
-.scm-table-container {
-  @apply w-full overflow-auto;
+  @apply flex flex-col border border-[#2a2f45] bg-[#161a23] rounded;
 }
 .scm-table {
-  @apply w-full text-left text-xs border-collapse;
+  @apply w-full text-left border-collapse;
 }
 .scm-table th {
-  @apply sticky top-0 bg-gray-100 px-3 py-2 font-bold text-gray-600 border-b border-gray-300 uppercase text-[10px] tracking-wider whitespace-nowrap;
+  @apply p-2 text-xs text-[#94a3b8] font-medium border-b border-[#2a2f45] uppercase;
 }
 .scm-table td {
-  @apply px-3 py-2 border-b border-gray-100 whitespace-nowrap font-mono;
+  @apply p-2 text-sm border-b border-[#2a2f45];
 }
-.scm-table tr:hover td {
-  @apply bg-blue-50/50 cursor-pointer;
-}
-
-.scm-button {
-  @apply px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded shadow-sm hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5;
-}
-
-.scm-input {
-  @apply px-2 py-1.5 bg-white border border-gray-300 rounded text-xs shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none;
-}
-.scm-select {
-  @apply px-2 py-1 bg-white border border-gray-300 rounded text-xs shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none;
-}
-
-.scm-badge {
-  @apply px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
-}
-.scm-badge-blue { @apply bg-blue-100 text-blue-800 border border-blue-200; }
-.scm-badge-green { @apply bg-green-100 text-green-800 border border-green-200; }
-.scm-badge-amber { @apply bg-amber-100 text-amber-800 border border-amber-200; }
-.scm-badge-red { @apply bg-red-100 text-red-800 border border-red-200; }
-
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+.scm-table tr:last-child td {
+  @apply border-0;
 }

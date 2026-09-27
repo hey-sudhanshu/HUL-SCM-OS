@@ -1,101 +1,184 @@
-'use client';
-import { useMemo, useState } from 'react';
-import Map, { Marker, NavigationControl, Source, Layer, Popup } from 'react-map-gl/maplibre';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { PixelIcon } from '../os/Icon';
+"use client";
 
-interface SCMMapProps {
-  nodes?: any[];
-  routes?: any[];
-  selectedNodeId?: string;
-  onNodeSelect?: (node: any) => void;
-  interactive?: boolean;
-  viewState?: any;
+import React, { useMemo, useState } from "react";
+import Map, { NavigationControl, Marker, Source, Layer, Popup } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { MapPin } from "lucide-react";
+
+export interface MapNode {
+  id: string;
+  coordinates: [number, number];
+  type?: string;
+  name?: string;
+  [key: string]: any;
 }
 
-export function SCMMap({ nodes = [], routes = [], selectedNodeId, onNodeSelect, interactive = true, viewState: initialViewState }: SCMMapProps) {
-  const [hoverInfo, setHoverInfo] = useState<any>(null);
+export interface MapRoute {
+  id: string;
+  coordinates: [number, number][];
+  color?: string;
+  selected?: boolean;
+}
 
-  const routeGeoJSON = useMemo(() => {
-    if (!routes || routes.length === 0) return null;
+interface SCMMapProps {
+  nodes?: MapNode[];
+  routes?: MapRoute[];
+  selectedNodeId?: string;
+  onNodeSelect?: (node: MapNode) => void;
+  layers?: Record<string, boolean>;
+  height?: string;
+  interactive?: boolean;
+}
+
+export default function SCMMap({
+  nodes = [],
+  routes = [],
+  selectedNodeId,
+  onNodeSelect,
+  layers,
+  height = "100%",
+  interactive = true,
+}: SCMMapProps) {
+  const [hoverInfo, setHoverInfo] = useState<{ x: number; y: number; node: MapNode } | null>(null);
+
+  // Default basemap and view
+  const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+  const INITIAL_VIEW_STATE = {
+    longitude: 78.9629,
+    latitude: 20.5937,
+    zoom: 4,
+    bearing: 0,
+    pitch: 0,
+  };
+
+  // Filter nodes based on active layers
+  const visibleNodes = useMemo(() => {
+    if (!layers) return nodes;
+    return nodes.filter((node) => {
+      const type = (node.type || "unknown").toLowerCase();
+      if (type.includes("plant") && layers["plants"] === false) return false;
+      if ((type.includes("warehouse") || type.includes("cfa")) && layers["warehouses"] === false) return false;
+      if (type.includes("distributor") && layers["distributors"] === false) return false;
+      return true;
+    });
+  }, [nodes, layers]);
+
+  // Construct GeoJSON for routes
+  const routesGeoJSON = useMemo(() => {
     return {
-      type: 'FeatureCollection',
-      features: routes.map((r, i) => ({
-        type: 'Feature',
-        properties: { id: r.id || i, color: r.color || 'var(--sys-teal)' },
+      type: "FeatureCollection" as const,
+      features: routes.map((route) => ({
+        type: "Feature" as const,
         geometry: {
-          type: 'LineString',
-          coordinates: r.coordinates || []
-        }
-      }))
+          type: "LineString" as const,
+          coordinates: route.coordinates,
+        },
+        properties: {
+          id: route.id,
+          color: route.selected ? "#10b981" : route.color || "#4b5563",
+          width: route.selected ? 3 : 1,
+          opacity: route.selected ? 1 : 0.5,
+        },
+      })),
     };
   }, [routes]);
 
-  return (
-    <div className="w-full h-full relative bg-[#e5e9ec]">
-      <Map
-        initialViewState={initialViewState || {
-          longitude: 78.9629,
-          latitude: 20.5937,
-          zoom: 3.5
-        }}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-        interactive={interactive}
-        scrollZoom={interactive}
-        dragPan={interactive}
-      >
-        {interactive && <NavigationControl position="bottom-right" showCompass={false} />}
+  const getNodeColor = (type?: string) => {
+    const t = (type || "").toLowerCase();
+    if (t.includes("plant")) return "bg-blue-500";
+    if (t.includes("warehouse") || t.includes("cfa")) return "bg-amber-500";
+    if (t.includes("distributor")) return "bg-teal-400";
+    return "bg-gray-500";
+  };
 
-        {routeGeoJSON && (
-          <Source id="routes" type="geojson" data={routeGeoJSON as any}>
+  return (
+    <div style={{ height, width: "100%" }} className="relative bg-black rounded-lg overflow-hidden border border-gray-800">
+      <Map
+        initialViewState={INITIAL_VIEW_STATE}
+        mapStyle={MAP_STYLE}
+        interactive={interactive}
+        attributionControl={false}
+      >
+        {interactive && <NavigationControl position="bottom-right" />}
+
+        {/* Routes Layer */}
+        {routes.length > 0 && (
+          <Source id="routes-source" type="geojson" data={routesGeoJSON}>
             <Layer
-              id="route-lines"
+              id="routes-layer"
               type="line"
               paint={{
-                'line-color': ['get', 'color'],
-                'line-width': 3,
-                'line-opacity': 0.8
+                "line-color": ["get", "color"],
+                "line-width": ["get", "width"],
+                "line-opacity": ["get", "opacity"],
               }}
             />
           </Source>
         )}
 
-        {nodes.map(node => (
-          <Marker
-            key={node.id}
-            longitude={node.lon || node.longitude}
-            latitude={node.lat || node.latitude}
-            anchor="center"
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              onNodeSelect?.(node);
-            }}
-          >
-            <div 
-              className={`w-4 h-4 rounded-full border-2 border-white cursor-pointer transition-all shadow-sm
-                ${selectedNodeId === node.id ? 'scale-150 ring-2 ring-[var(--sys-amber)] z-20' : 'hover:scale-125 z-10'}
-                ${node.type === 'Plant' ? 'bg-blue-600 rounded-sm' : node.type === 'CFA' ? 'bg-purple-500' : node.type === 'Supplier' ? 'bg-amber-600' : 'bg-[var(--sys-teal)]'}
-              `}
-              onMouseEnter={() => setHoverInfo(node)}
-              onMouseLeave={() => setHoverInfo(null)}
-            />
-          </Marker>
-        ))}
+        {/* Nodes Layer */}
+        {visibleNodes.map((node) => {
+          const isSelected = selectedNodeId === node.id;
+          const nodeColorClass = getNodeColor(node.type);
+          const isPlant = (node.type || "").toLowerCase().includes("plant");
 
+          return (
+            <Marker
+              key={node.id}
+              longitude={node.coordinates[0]}
+              latitude={node.coordinates[1]}
+              anchor="center"
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                if (onNodeSelect) onNodeSelect(node);
+              }}
+            >
+              <div
+                className={`cursor-pointer transition-all duration-200 ${
+                  isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-black scale-125 z-10" : ""
+                }`}
+                onMouseEnter={(e) => {
+                  setHoverInfo({ x: e.clientX, y: e.clientY, node });
+                }}
+                onMouseLeave={() => {
+                  setHoverInfo(null);
+                }}
+              >
+                <div
+                  className={`
+                    ${nodeColorClass} shadow-lg
+                    ${isPlant ? "w-3 h-3 rounded-sm" : "w-2.5 h-2.5 rounded-full"}
+                    ${isSelected ? "w-4 h-4 shadow-[0_0_10px_rgba(255,255,255,0.5)]" : ""}
+                  `}
+                />
+              </div>
+            </Marker>
+          );
+        })}
+
+        {/* Hover Popup */}
         {hoverInfo && (
           <Popup
-            longitude={hoverInfo.lon || hoverInfo.longitude}
-            latitude={hoverInfo.lat || hoverInfo.latitude}
+            longitude={hoverInfo.node.coordinates[0]}
+            latitude={hoverInfo.node.coordinates[1]}
             closeButton={false}
             closeOnClick={false}
             anchor="bottom"
-            offset={12}
+            offset={15}
             className="z-50"
+            style={{ fontFamily: "monospace" }}
           >
-            <div className="p-2 text-xs font-sans text-sys-black shadow-lg">
-              <div className="font-bold border-b border-black/10 pb-1 mb-1">{hoverInfo.id}</div>
-              <div className="opacity-80">{hoverInfo.type || hoverInfo.role}</div>
-              {hoverInfo.location && <div className="text-black/60">{hoverInfo.location}</div>}
+            <div className="bg-gray-900 border border-gray-700 p-2 rounded shadow-xl text-xs font-mono text-gray-200 min-w-[120px]">
+              <div className="font-bold text-white border-b border-gray-700 pb-1 mb-1">
+                {hoverInfo.node.name || hoverInfo.node.cluster_name || hoverInfo.node.id}
+              </div>
+              <div className="text-gray-400">ID: {hoverInfo.node.id}</div>
+              {hoverInfo.node.type && (
+                <div className="text-gray-400 capitalize mt-1 flex items-center gap-1">
+                  <MapPin size={10} />
+                  {hoverInfo.node.type}
+                </div>
+              )}
             </div>
           </Popup>
         )}

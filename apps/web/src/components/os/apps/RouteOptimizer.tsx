@@ -1,135 +1,225 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import React, { useEffect, useState, useMemo } from 'react';
+import { Route, MapPin, ChevronRight, Info } from 'lucide-react';
 import { fetchNetworkData } from '@/lib/api';
 import { formatCurrency, formatNumber } from '@/lib/format';
-import { Navigation, Play } from 'lucide-react';
-import { SCMMap } from '../../map/SCMMap';
+import SCMMap from '@/components/map/SCMMap';
 
-export function RouteOptimizer() {
-  const [data, setData] = useState<any>(null);
-  const [origin, setOrigin] = useState('');
-  const [dest, setDest] = useState('');
-  const [routes, setRoutes] = useState<any[]>([]);
-  const [selectedRouteIndex, setSelectedRouteIndex] = useState<number>(0);
-  const [nodes, setNodes] = useState<any[]>([]);
+export default function RouteOptimizer() {
+  const [network, setNetwork] = useState<any>(null);
+  const [phase4a, setPhase4a] = useState<any>(null);
+  const [origin, setOrigin] = useState<string>('PL-HAL');
+  const [destination, setDestination] = useState<string>('WH-PUN');
+  const [optimized, setOptimized] = useState(false);
+  const [selectedPathIndex, setSelectedPathIndex] = useState(0);
 
   useEffect(() => {
-    fetchNetworkData().then(d => {
-      setData(d);
-      const all = [...(d.plants || []), ...(d.warehouses || []), ...(d.cfas || []), ...(d.distributors || [])];
-      setNodes(all);
-    });
+    fetchNetworkData().then(setNetwork);
+    fetch('/precomputed/phase4a.json')
+      .then((res) => res.json())
+      .then(setPhase4a)
+      .catch(console.error);
   }, []);
 
-  const handleOptimize = async () => {
-    if (!origin || !dest) return;
-    try {
-      const res = await fetch(`http://localhost:8000/k-shortest-paths?origin=${origin}&destination=${dest}&k=3`);
-      if (res.ok) {
-        const result = await res.json();
-        // Normalize k_shortest data structure (it returns { paths: [...] } or direct array in fallback)
-        const paths = Array.isArray(result) ? result : result.paths || [];
-        setRoutes(paths);
-        setSelectedRouteIndex(0);
-      } else {
-        // Fallback for visual demo when solver is off
-        setRoutes([
-          { path: [origin, 'WH-DEMO', dest], cost: 15000, distance: 450, duration: 12 },
-          { path: [origin, 'CFA-DEMO', dest], cost: 17500, distance: 510, duration: 14 }
-        ]);
-        setSelectedRouteIndex(0);
-      }
-    } catch (e) {
-      console.warn("Solver offline, using fallback UI");
-      setRoutes([
-        { path: [origin, dest], cost: 12000, distance: 400, duration: 10 }
-      ]);
-      setSelectedRouteIndex(0);
-    }
+  const handleOptimize = () => {
+    setOptimized(true);
+    setSelectedPathIndex(0);
   };
 
-  if (!data) return <div className="p-8 font-mono text-xs">Loading Route Optimizer...</div>;
+  const currentPaths = useMemo(() => {
+    if (!optimized || !phase4a?.k_shortest) return [];
+    const key = `${origin}_${destination}`;
+    return phase4a.k_shortest[key]?.paths || [];
+  }, [optimized, phase4a, origin, destination]);
 
-  const activeRoute = routes[selectedRouteIndex];
-  
-  // Build map data based on selected route
-  let mapNodes: any[] = [];
-  let mapRoutes: any[] = [];
-  
-  if (activeRoute) {
-    mapNodes = activeRoute.path.map((nodeId: string) => {
-      return nodes.find(n => n.id === nodeId) || { id: nodeId, type: 'Waypoint', lon: 78, lat: 20 };
+  const mapData = useMemo(() => {
+    if (!network || currentPaths.length === 0) return { markers: [], layers: [] };
+
+    const nodeMap = new Map();
+    [...(network.plants || []), ...(network.warehouses || []), ...(network.distributors || [])].forEach(n => {
+      nodeMap.set(n.id, n);
     });
+
+    const markers: any[] = [];
+    const layers: any[] = [];
+
+    // Draw lines for all paths
+    currentPaths.forEach((path: any, index: number) => {
+      const isSelected = index === selectedPathIndex;
+      const coordinates = path.path.map((nodeId: string) => {
+        const node = nodeMap.get(nodeId);
+        return node ? node.coordinates : null;
+      }).filter(Boolean);
+
+      if (coordinates.length > 1) {
+        layers.push({
+          id: `route-${index}`,
+          type: 'line',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates
+            }
+          },
+          paint: {
+            'line-color': isSelected ? '#10b981' : '#6b7280',
+            'line-width': isSelected ? 4 : 2,
+            'line-opacity': isSelected ? 1 : 0.5
+          }
+        });
+      }
+    });
+
+    // Add origin and destination markers
+    const originNode = nodeMap.get(origin);
+    const destNode = nodeMap.get(destination);
     
-    const coords = mapNodes.map(n => [n.lon || n.longitude || 78, n.lat || n.latitude || 20]);
-    if (coords.length >= 2) {
-      mapRoutes = [{ id: 'opt-route', color: '#10b981', coordinates: coords }];
+    if (originNode) {
+      markers.push({
+        id: 'origin',
+        coordinates: originNode.coordinates,
+        color: '#3b82f6',
+        label: origin
+      });
     }
-  }
+    
+    if (destNode) {
+      markers.push({
+        id: 'destination',
+        coordinates: destNode.coordinates,
+        color: '#ef4444',
+        label: destination
+      });
+    }
+
+    return { markers, layers };
+  }, [network, currentPaths, selectedPathIndex, origin, destination]);
+
+  if (!network) return <div className="p-8 text-slate-400 font-mono">Loading data...</div>;
 
   return (
-    <div className="scm-app-layout">
-      <div className="scm-header">
-        <div className="scm-header-title">
-          <Navigation className="w-4 h-4 text-emerald-600" />
-          ROUTE OPTIMIZER
-        </div>
+    <div className="flex flex-col h-full bg-slate-900 text-slate-200 font-mono">
+      {/* Header */}
+      <div className="flex items-center p-4 border-b border-slate-800 bg-slate-950">
+        <Route className="w-5 h-5 text-blue-400 mr-3" />
+        <h1 className="text-lg font-bold text-slate-100 tracking-wider">ROUTE OPTIMIZER</h1>
       </div>
-      
-      <div className="scm-toolbar flex gap-4">
-        <select className="scm-select w-48" value={origin} onChange={e => setOrigin(e.target.value)}>
-          <option value="">Select Origin...</option>
-          {data.plants?.map((p:any) => <option key={p.id} value={p.id}>{p.id} ({p.location})</option>)}
-        </select>
-        <span className="text-gray-400">&rarr;</span>
-        <select className="scm-select w-48" value={dest} onChange={e => setDest(e.target.value)}>
-          <option value="">Select Destination...</option>
-          {data.distributors?.map((d:any) => <option key={d.id} value={d.id}>{d.id} ({d.location})</option>)}
-        </select>
-        <button className="scm-button ml-auto" onClick={handleOptimize} disabled={!origin || !dest}>
-          <Play className="w-3 h-3" /> Optimize
+
+      {/* Toolbar */}
+      <div className="flex items-center p-4 gap-4 border-b border-slate-800 bg-slate-900">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 text-sm">ORIGIN:</span>
+          <select 
+            className="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-1 rounded text-sm focus:outline-none focus:border-blue-500"
+            value={origin}
+            onChange={(e) => { setOrigin(e.target.value); setOptimized(false); }}
+          >
+            {(network.plants || []).map((p: any) => (
+              <option key={p.id} value={p.id}>{p.id} ({p.name})</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 text-sm">DEST:</span>
+          <select 
+            className="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-1 rounded text-sm focus:outline-none focus:border-blue-500"
+            value={destination}
+            onChange={(e) => { setDestination(e.target.value); setOptimized(false); }}
+          >
+            {(network.warehouses || []).map((w: any) => (
+              <option key={w.id} value={w.id}>{w.id} ({w.name})</option>
+            ))}
+          </select>
+        </div>
+
+        <button 
+          onClick={handleOptimize}
+          className="ml-auto bg-blue-600 hover:bg-blue-500 text-white px-6 py-1 rounded text-sm font-bold transition-colors"
+        >
+          OPTIMIZE
         </button>
       </div>
 
-      <div className="scm-main">
-        <div className="scm-panel w-1/3">
-          <div className="scm-panel-header">Computed Paths</div>
-          <div className="scm-panel-content p-0">
-            {routes.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 italic text-xs">Select origin and destination to compute paths</div>
-            ) : (
-              <div className="flex flex-col">
-                {routes.map((r, i) => (
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Panel */}
+        <div className="w-1/3 border-r border-slate-800 overflow-y-auto bg-slate-900">
+          {!optimized ? (
+            <div className="p-8 text-center text-slate-500 flex flex-col items-center">
+              <MapPin className="w-12 h-12 mb-4 opacity-50" />
+              <p>Select origin and destination, then click Optimize</p>
+            </div>
+          ) : currentPaths.length === 0 ? (
+            <div className="p-8 text-center text-amber-500 flex flex-col items-center">
+              <Info className="w-12 h-12 mb-4 opacity-50" />
+              <p>No precomputed routes for this pair</p>
+              <p className="text-sm opacity-70 mt-2">({origin}_{destination})</p>
+            </div>
+          ) : (
+            <div className="p-4 flex flex-col gap-4">
+              {currentPaths.map((path: any, index: number) => {
+                const isSelected = index === selectedPathIndex;
+                const isOptimal = index === 0;
+                return (
                   <div 
-                    key={i} 
-                    onClick={() => setSelectedRouteIndex(i)}
-                    className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${selectedRouteIndex === i ? 'bg-emerald-50 border-l-4 border-l-emerald-500' : 'hover:bg-gray-50'}`}
+                    key={index}
+                    onClick={() => setSelectedPathIndex(index)}
+                    className={`cursor-pointer rounded border p-4 transition-colors ${
+                      isSelected ? 'border-blue-500 bg-blue-900/20' : 'border-slate-800 bg-slate-800/50 hover:border-slate-600'
+                    }`}
                   >
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-gray-900 text-sm">Route Option {i + 1} {i === 0 && <span className="scm-badge scm-badge-green ml-2">Optimal</span>}</span>
-                      <span className="font-mono font-bold text-emerald-700">{formatCurrency(r.cost)}</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-bold text-slate-200">Route Option {index + 1}</h3>
+                      {isOptimal && (
+                        <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded font-bold">
+                          OPTIMAL
+                        </span>
+                      )}
                     </div>
-                    <div className="flex gap-4 text-xs text-gray-500 font-mono">
-                      <span>Dist: {formatNumber(r.distance)} km</span>
-                      <span>Time: {formatNumber(r.duration)} hrs</span>
+                    
+                    <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+                      <div>
+                        <div className="text-slate-500 text-xs">COST</div>
+                        <div className="text-slate-200 font-bold">{formatCurrency(path.total_cost || 0)}</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-500 text-xs">DISTANCE</div>
+                        <div className="text-slate-200">{formatNumber(path.total_distance || 0)} km</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-500 text-xs">TIME</div>
+                        <div className="text-slate-200">{formatNumber(path.total_time || 0)} hrs</div>
+                      </div>
                     </div>
-                    <div className="mt-3 text-[10px] text-gray-400 font-mono break-all leading-relaxed">
-                      {r.path.join(' → ')}
+                    
+                    <div className="text-xs text-slate-400 break-words flex flex-wrap items-center gap-1">
+                      {path.path.map((node: string, i: number) => (
+                        <React.Fragment key={i}>
+                          <span className={i === 0 || i === path.path.length - 1 ? 'text-slate-200 font-bold' : ''}>
+                            {node}
+                          </span>
+                          {i < path.path.length - 1 && <ChevronRight className="w-3 h-3 text-slate-600" />}
+                        </React.Fragment>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        <div className="scm-panel flex-1">
-          <div className="flex-1 relative">
-            <SCMMap 
-              nodes={mapNodes}
-              routes={mapRoutes}
-            />
-          </div>
+        {/* Right Panel */}
+        <div className="flex-1 relative">
+          <SCMMap
+            markers={mapData.markers}
+            layers={mapData.layers}
+            center={mapData.markers.length > 0 ? mapData.markers[0].coordinates : undefined}
+            zoom={mapData.markers.length > 0 ? 5 : undefined}
+          />
         </div>
       </div>
     </div>

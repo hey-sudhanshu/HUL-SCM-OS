@@ -1,102 +1,227 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import React, { useEffect, useState, useMemo } from 'react';
+import { Send, Package, Truck, ChevronRight } from 'lucide-react';
 import { fetchNetworkData } from '@/lib/api';
-import { formatNumber, formatCurrency, formatPercent } from '@/lib/format';
-import { Truck } from 'lucide-react';
-import { SCMMap } from '../../map/SCMMap';
+import { formatNumber, formatPercent } from '@/lib/format';
+import SCMMap from '@/components/map/SCMMap';
 
-export function DispatchManager() {
-  const [data, setData] = useState<any>(null);
-  const [selectedDispatch, setSelectedDispatch] = useState<any>(null);
-
+export default function DispatchManager() {
+  const [network, setNetwork] = useState<any>(null);
+  const [phase4a, setPhase4a] = useState<any>(null);
+  const [phase4b, setPhase4b] = useState<any>(null);
+  
   useEffect(() => {
-    fetchNetworkData().then(setData);
+    fetchNetworkData().then(setNetwork);
+    fetch('/precomputed/phase4a.json')
+      .then(res => res.json())
+      .then(setPhase4a)
+      .catch(console.error);
+    fetch('/precomputed/phase4b.json')
+      .then(res => res.json())
+      .then(setPhase4b)
+      .catch(console.error);
   }, []);
 
-  if (!data) return <div className="p-8 text-xs font-mono text-gray-500">Loading Dispatch Data...</div>;
+  const cvrpRoutes = useMemo(() => {
+    return phase4a?.cvrp_nagpur?.routes || [];
+  }, [phase4a]);
 
-  // Assuming dispatch queue comes from API, fallback to mock if missing for visual layout
-  const dispatches = data.dispatches || [
-    { id: 'DSP-8001', origin: 'P-MH', destination: 'CFA-BOM', vehicle: 'TRK-20T', status: 'IN_TRANSIT', cost: 45000, completion: 0.65 },
-    { id: 'DSP-8002', origin: 'P-GJ', destination: 'WH-DEL', vehicle: 'TRK-32T', status: 'QUEUED', cost: 82000, completion: 0 },
-    { id: 'DSP-8003', origin: 'WH-DEL', destination: 'D-DEL-01', vehicle: 'TRK-9T', status: 'DELIVERED', cost: 12000, completion: 1 }
-  ];
+  const bins = useMemo(() => {
+    return phase4a?.bin_packing_demo?.bins || [];
+  }, [phase4a]);
+
+  const mapData = useMemo(() => {
+    if (!network || cvrpRoutes.length === 0) return { markers: [], layers: [] };
+
+    const nodeMap = new Map();
+    [...(network.plants || []), ...(network.warehouses || []), ...(network.distributors || [])].forEach(n => {
+      nodeMap.set(n.id, n);
+    });
+
+    const markers: any[] = [];
+    const layers: any[] = [];
+
+    // Depot
+    const depotNode = nodeMap.get('WH-NAG');
+    if (depotNode) {
+      markers.push({
+        id: 'WH-NAG',
+        coordinates: depotNode.coordinates,
+        color: '#ef4444',
+        label: 'DEPOT (WH-NAG)'
+      });
+    }
+
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+    cvrpRoutes.forEach((r: any, index: number) => {
+      const color = colors[index % colors.length];
+      const coordinates = r.route.map((nodeId: string) => {
+        const node = nodeMap.get(nodeId);
+        if (node && nodeId !== 'WH-NAG') {
+          markers.push({
+            id: `node-${nodeId}-${index}`,
+            coordinates: node.coordinates,
+            color: color,
+            label: nodeId
+          });
+        }
+        return node ? node.coordinates : null;
+      }).filter(Boolean);
+
+      if (coordinates.length > 1) {
+        layers.push({
+          id: `cvrp-route-${index}`,
+          type: 'line',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates
+            }
+          },
+          paint: {
+            'line-color': color,
+            'line-width': 3,
+            'line-opacity': 0.8
+          }
+        });
+      }
+    });
+
+    return { markers, layers };
+  }, [network, cvrpRoutes]);
+
+  if (!network || !phase4a) return <div className="p-8 text-slate-400 font-mono">Loading dispatch data...</div>;
 
   return (
-    <div className="scm-app-layout">
-      <div className="scm-header">
-        <div className="scm-header-title">
-          <Truck className="w-4 h-4 text-gray-700" />
-          DISPATCH MANAGER
-        </div>
+    <div className="flex flex-col h-full bg-slate-900 text-slate-200 font-mono overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center p-4 border-b border-slate-800 bg-slate-950">
+        <Send className="w-5 h-5 text-blue-400 mr-3" />
+        <h1 className="text-lg font-bold text-slate-100 tracking-wider">DISPATCH MANAGER</h1>
       </div>
-      
-      <div className="scm-kpi-strip">
-        <div className="scm-kpi-card">
-          <div className="scm-kpi-label">Active Dispatches</div>
-          <div className="scm-kpi-value">{formatNumber(dispatches.filter((d:any) => d.status === 'IN_TRANSIT').length)}</div>
+
+      {/* KPI Strip */}
+      <div className="grid grid-cols-4 gap-4 p-4 border-b border-slate-800 bg-slate-950/50">
+        <div className="bg-slate-900 border border-slate-800 rounded p-3">
+          <div className="text-slate-500 text-xs mb-1">TOTAL ROUTES</div>
+          <div className="text-xl font-bold text-slate-100">
+            {formatNumber(cvrpRoutes.length)}
+          </div>
         </div>
-        <div className="scm-kpi-card">
-          <div className="scm-kpi-label">Queued</div>
-          <div className="scm-kpi-value">{formatNumber(dispatches.filter((d:any) => d.status === 'QUEUED').length)}</div>
+        <div className="bg-slate-900 border border-slate-800 rounded p-3">
+          <div className="text-slate-500 text-xs mb-1">TOTAL BINS</div>
+          <div className="text-xl font-bold text-slate-100">
+            {formatNumber(phase4a?.bin_packing_demo?.total_bins || 0)}
+          </div>
         </div>
-        <div className="scm-kpi-card">
-          <div className="scm-kpi-label">Total Freight In Transit</div>
-          <div className="scm-kpi-value">{formatCurrency(dispatches.reduce((a:number,b:any) => a + (b.status === 'IN_TRANSIT' ? b.cost : 0), 0))}</div>
+        <div className="bg-slate-900 border border-slate-800 rounded p-3">
+          <div className="text-slate-500 text-xs mb-1">FLEET VEHICLES</div>
+          <div className="text-xl font-bold text-slate-100">
+            {formatNumber(cvrpRoutes.length)}
+          </div>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded p-3">
+          <div className="text-slate-500 text-xs mb-1">DISPATCH STATUS</div>
+          <div className="text-xl font-bold text-emerald-400">
+            READY
+          </div>
         </div>
       </div>
 
-      <div className="scm-main">
-        <div className="scm-panel w-1/2">
-          <div className="scm-table-container">
-            <table className="scm-table">
-              <thead>
-                <tr>
-                  <th>Dispatch ID</th>
-                  <th>Route</th>
-                  <th>Vehicle</th>
-                  <th>Status</th>
-                  <th className="text-right">Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dispatches.map((d: any) => (
-                  <tr key={d.id} onClick={() => setSelectedDispatch(d)} className={selectedDispatch?.id === d.id ? 'bg-gray-100' : ''}>
-                    <td className="font-bold">{d.id}</td>
-                    <td>{d.origin} → {d.destination}</td>
-                    <td>{d.vehicle}</td>
-                    <td>
-                      <span className={`scm-badge ${d.status==='DELIVERED'?'scm-badge-green':d.status==='QUEUED'?'scm-badge-amber':'scm-badge-blue'}`}>
-                        {d.status}
-                      </span>
-                    </td>
-                    <td className="text-right">{formatCurrency(d.cost)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Panel - Routes & Bins */}
+        <div className="w-1/2 border-r border-slate-800 overflow-y-auto bg-slate-900 p-4 space-y-6">
+          
+          {/* CVRP Routes */}
+          <div>
+            <h2 className="text-slate-300 font-bold mb-4 flex items-center">
+              <Truck className="w-4 h-4 mr-2 text-slate-400" />
+              CVRP Routes (Nagpur)
+            </h2>
+            <div className="space-y-3">
+              {cvrpRoutes.map((r: any, idx: number) => (
+                <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-blue-400">Vehicle {idx + 1} ({r.vehicle})</span>
+                    <span className="text-slate-400 text-sm">{formatNumber(r.distance || 0)} km</span>
+                  </div>
+                  <div className="text-xs text-slate-300 flex flex-wrap items-center gap-1">
+                    {r.route.map((node: string, i: number) => (
+                      <React.Fragment key={i}>
+                        <span className={node === 'WH-NAG' ? 'text-amber-400 font-bold' : ''}>
+                          {node}
+                        </span>
+                        {i < r.route.length - 1 && <ChevronRight className="w-3 h-3 text-slate-600" />}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+
+          {/* Bin Packing */}
+          <div>
+            <h2 className="text-slate-300 font-bold mb-4 flex items-center">
+              <Package className="w-4 h-4 mr-2 text-slate-400" />
+              Bin Packing Demo
+            </h2>
+            <div className="space-y-3">
+              {bins.map((bin: any, idx: number) => {
+                // assume max capacity is somewhat relative to current weight/vol to show a bar, or hardcode a reasonable max
+                const maxW = 2000;
+                const maxV = 15;
+                const wPct = Math.min((bin.weight / maxW) * 100, 100);
+                const vPct = Math.min((bin.volume / maxV) * 100, 100);
+
+                return (
+                  <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded p-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold text-slate-200">Bin {bin.id}</span>
+                      <span className="text-slate-400 text-sm">{bin.items?.length || 0} items</span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div>
+                        <div className="flex justify-between text-xs text-slate-400 mb-1">
+                          <span>Weight Util</span>
+                          <span>{formatNumber(bin.weight)} kg</span>
+                        </div>
+                        <div className="w-full bg-slate-900 rounded-full h-1.5">
+                          <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${wPct}%` }}></div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between text-xs text-slate-400 mb-1">
+                          <span>Volume Util</span>
+                          <span>{formatNumber(bin.volume)} m³</span>
+                        </div>
+                        <div className="w-full bg-slate-900 rounded-full h-1.5">
+                          <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${vPct}%` }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
         </div>
-        <div className="scm-panel flex-1">
-          <div className="scm-panel-header">Live Tracking</div>
-          <div className="flex-1 bg-gray-100 flex items-center justify-center p-8 text-center text-gray-400">
-            {selectedDispatch ? (
-              <div className="w-full max-w-sm bg-white p-6 rounded shadow-sm border border-gray-200">
-                <div className="font-bold text-lg text-gray-900">{selectedDispatch.id}</div>
-                <div className="text-xs text-gray-500 mb-6">{selectedDispatch.origin} to {selectedDispatch.destination}</div>
-                
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 transition-all" style={{ width: `${selectedDispatch.completion * 100}%` }} />
-                </div>
-                <div className="flex justify-between mt-2 text-xs font-mono font-bold">
-                  <span>{formatPercent(selectedDispatch.completion)}</span>
-                  <span>{selectedDispatch.status}</span>
-                </div>
-              </div>
-            ) : (
-              <div>Select a dispatch to view live tracking details.</div>
-            )}
-          </div>
+
+        {/* Right Panel - Map */}
+        <div className="flex-1 relative">
+          <SCMMap
+            markers={mapData.markers}
+            layers={mapData.layers}
+            center={mapData.markers.find(m => m.id === 'WH-NAG')?.coordinates || [79.0882, 21.1458]}
+            zoom={6}
+          />
         </div>
       </div>
     </div>
