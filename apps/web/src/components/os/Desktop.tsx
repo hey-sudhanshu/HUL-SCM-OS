@@ -133,7 +133,7 @@ export function Desktop() {
 
         {/* Windows Area */}
         <div className="absolute inset-0 pointer-events-none z-10">
-          {windows.map(win => {
+          {Object.values(windows || {}).map(win => {
             const app = APPS.find(a => a.id === win.appId);
             if (!app || win.isMinimized) return null;
             
