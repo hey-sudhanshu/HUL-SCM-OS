@@ -51,7 +51,7 @@ const WALLPAPERS = [
 ];
 
 export function Desktop() {
-  const { windows, openWindow, bringToFront, closeWindow, minimizeWindow, toggleMaximize } = useOSStore();
+  const { windows, openWindow, focusWindow, closeWindow, minimizeWindow, toggleMaximizeWindow } = useOSStore();
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
   const [stats, setStats] = useState({ nodes: 0, lanes: 0, skus: 0 });
 
@@ -134,7 +134,7 @@ export function Desktop() {
         {/* Windows Area */}
         <div className="absolute inset-0 pointer-events-none z-10">
           {Object.values(windows || {}).map(win => {
-            const app = APPS.find(a => a.id === win.appId);
+            const app = APPS.find(a => a.id === win.id);
             if (!app || win.isMinimized) return null;
             
             const AppComp = app.component;
@@ -144,8 +144,8 @@ export function Desktop() {
                 window={win}
                 onClose={() => closeWindow(win.id)}
                 onMinimize={() => minimizeWindow(win.id)}
-                onMaximize={() => toggleMaximize(win.id)}
-                onFocus={() => bringToFront(win.id)}
+                onMaximize={() => toggleMaximizeWindow(win.id)}
+                onFocus={() => focusWindow(win.id)}
               >
                 <AppComp />
               </Window>
@@ -159,11 +159,11 @@ export function Desktop() {
         onWindowClick={(id) => {
           const win = windows.find(w => w.id === id);
           if (win?.isMinimized) {
-            bringToFront(id);
+            focusWindow(id);
           } else if (win?.isFocused) {
             minimizeWindow(id);
           } else {
-            bringToFront(id);
+            focusWindow(id);
           }
         }}
       />
