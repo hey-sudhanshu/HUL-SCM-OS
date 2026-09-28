@@ -133,20 +133,25 @@ export function Desktop() {
 
         {/* Windows Area */}
         <div className="absolute inset-0 pointer-events-none z-10">
+          
+          
           {Object.values(windows || {}).map(win => {
             const app = APPS.find(a => a.id === win.id);
-            if (!app || win.isMinimized) return null;
+            if (!app) return null;
+            if (win.isMinimized) return null;
             
             const AppComp = app.component;
             return (
-              <Window
-                key={win.id}
-                id={win.id}
-              >
-                <AppComp />
-              </Window>
+              <div key={win.id} className="absolute inset-0 bg-red-500/50 z-50 pointer-events-none flex items-center justify-center text-white text-6xl font-bold">
+                RENDERED WINDOW: {win.id}
+                <Window id={win.id}>
+                  <AppComp />
+                </Window>
+              </div>
             );
           })}
+
+
         </div>
       </div>
 
