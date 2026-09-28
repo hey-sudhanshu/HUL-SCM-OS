@@ -91,7 +91,7 @@ export function Desktop() {
               title={app.title}
             >
               <div className="w-16 h-16 flex items-center justify-center bg-slate-900/60 border border-slate-700/50 rounded-2xl group-hover:scale-105 group-hover:border-indigo-500/50 transition-all shadow-lg backdrop-blur-sm">
-                const AppIcon = getAppIcon(app.icon); return <AppIcon className="w-8 h-8 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+                {(() => { const AppIcon = getAppIcon(app.icon); return <AppIcon className="w-8 h-8 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />; })()}
               </div>
               <span className="text-xs font-medium text-slate-300 drop-shadow-md text-center leading-tight line-clamp-2">
                 {app.title}
