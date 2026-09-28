@@ -141,11 +141,7 @@ export function Desktop() {
             return (
               <Window
                 key={win.id}
-                window={win}
-                onClose={() => closeWindow(win.id)}
-                onMinimize={() => minimizeWindow(win.id)}
-                onMaximize={() => toggleMaximizeWindow(win.id)}
-                onFocus={() => focusWindow(win.id)}
+                id={win.id}
               >
                 <AppComp />
               </Window>
