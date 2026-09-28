@@ -1,9 +1,0 @@
-*.py
-*.log
-*.txt
-*.js
-*.png
-*.sh
-scripts/
-tests/
-

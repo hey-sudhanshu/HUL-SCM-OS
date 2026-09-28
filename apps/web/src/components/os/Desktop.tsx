@@ -1,11 +1,6 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from 'react';
-import { useOSStore } from '@/lib/store/os';
-import { MenuBar } from './MenuBar';
-import { BottomBar } from './BottomBar';
-import { Window } from './Window';
-import { getAppIcon } from './Icon';
 import NetworkBrowser from './apps/NetworkBrowser';
 import TacticalMap from './apps/TacticalMap';
 import WarehouseManager from './apps/WarehouseManager';
@@ -15,159 +10,121 @@ import FreightCalculator from './apps/FreightCalc';
 import InventoryLab from './apps/InventoryLab';
 import VendorManager from './apps/VendorManager';
 import RiskSimulator from './apps/RiskSimulator';
-import { Governance } from './apps/Governance';
-import { Orion } from './apps/Orion';
-import { Activity, Server, Box, GitMerge } from 'lucide-react';
-import { fetchNetworkData } from '@/lib/api';
+import { Governance } from '../Governance';
+import { Orion } from './apps/Copilot';
+import { Activity, Server, Box, GitMerge, LayoutGrid, Network, Map, Truck, Shield, Route, Package, Database, AlertTriangle, Scale, Cpu, Search, MapPin } from 'lucide-react';
 
 type AppDefinition = {
   id: string;
   title: string;
-  icon: any;
+  icon: string;
   component: React.ComponentType<any>;
-  defaultSize: { width: number; height: number };
 };
 
 const APPS: AppDefinition[] = [
-  { id: 'network', title: 'Network Browser', icon: 'network', component: NetworkBrowser, defaultSize: { width: 1100, height: 700 } },
-  { id: 'tactical', title: 'Tactical Map', icon: 'tactical', component: TacticalMap, defaultSize: { width: 1200, height: 800 } },
-  { id: 'warehouse', title: 'Warehouse Manager', icon: 'warehouse', component: WarehouseManager, defaultSize: { width: 1000, height: 650 } },
-  { id: 'dispatch', title: 'Dispatch Manager', icon: 'dispatch', component: DispatchManager, defaultSize: { width: 1000, height: 650 } },
-  { id: 'route', title: 'Route Optimizer', icon: 'route', component: RouteOptimizer, defaultSize: { width: 1100, height: 700 } },
-  { id: 'freight', title: 'Freight Calculator', icon: 'freight', component: FreightCalculator, defaultSize: { width: 950, height: 600 } },
-  { id: 'inventory', title: 'Inventory Lab', icon: 'inventory', component: InventoryLab, defaultSize: { width: 1100, height: 700 } },
-  { id: 'vendor', title: 'Supply Base', icon: 'vendor', component: VendorManager, defaultSize: { width: 1000, height: 650 } },
-  { id: 'risk', title: 'Risk Simulator', icon: 'risk', component: RiskSimulator, defaultSize: { width: 1000, height: 650 } },
-  { id: 'governance', title: 'Governance', icon: 'governance', component: Governance, defaultSize: { width: 1000, height: 600 } },
-  { id: 'orion', title: 'Orion', icon: 'orion', component: Orion, defaultSize: { width: 700, height: 600 } }
+  { id: 'tactical', title: 'Tactical Map', icon: 'tactical', component: TacticalMap },
+  { id: 'network', title: 'Network Browser', icon: 'network', component: NetworkBrowser },
+  { id: 'warehouse', title: 'Warehouse Manager', icon: 'warehouse', component: WarehouseManager },
+  { id: 'dispatch', title: 'Dispatch Manager', icon: 'dispatch', component: DispatchManager },
+  { id: 'route', title: 'Route Optimizer', icon: 'route', component: RouteOptimizer },
+  { id: 'freight', title: 'Freight Calculator', icon: 'freight', component: FreightCalculator },
+  { id: 'inventory', title: 'Inventory Lab', icon: 'inventory', component: InventoryLab },
+  { id: 'vendor', title: 'Supply Base', icon: 'vendor', component: VendorManager },
+  { id: 'risk', title: 'Risk Simulator', icon: 'risk', component: RiskSimulator },
+  { id: 'governance', title: 'Governance', icon: 'governance', component: Governance },
+  { id: 'orion', title: 'Orion', icon: 'orion', component: Orion }
 ];
 
-const WALLPAPERS = [
-  'bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-800 to-slate-950',
-  'bg-[#0f1219]',
-  'bg-[url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgwem0yMCAyMGMwIDUuNS00LjUgMTAtMTAgMTBTMCAyNS41IDAgMjAgNC41IDEwIDEwIDEwczEwIDQuNSAxMCAxMHoiIGZpbGw9IiMzMzMiIGZpbGwtb3BhY2l0eT0iLjEiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg==")] bg-repeat',
-  'bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900',
-  'bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] bg-slate-950'
-];
+const getAppIcon = (iconName: string) => {
+  switch (iconName) {
+    case 'network': return Network;
+    case 'tactical': return MapPin;
+    case 'warehouse': return Box;
+    case 'dispatch': return Truck;
+    case 'route': return Route;
+    case 'freight': return Package;
+    case 'inventory': return Database;
+    case 'vendor': return Shield;
+    case 'risk': return AlertTriangle;
+    case 'governance': return Scale;
+    case 'orion': return Cpu;
+    default: return LayoutGrid;
+  }
+};
 
 export function Desktop() {
-  const { windows, openWindow, focusWindow, closeWindow, minimizeWindow, toggleMaximizeWindow } = useOSStore();
-  const [wallpaperIndex, setWallpaperIndex] = useState(0);
-  const [stats, setStats] = useState({ nodes: 0, lanes: 0, skus: 0 });
-
-  useEffect(() => {
-    const saved = localStorage.getItem('hul-os-wallpaper');
-    if (saved) setWallpaperIndex(parseInt(saved, 10));
-
-    fetchNetworkData().then(data => {
-      if (data) {
-        setStats({
-          nodes: (data.plants?.length || 0) + (data.warehouses?.length || 0) + (data.distributors?.length || 0),
-          lanes: data.lanes?.length || 0,
-          skus: data.skus?.length || 0
-        });
-      }
-    });
-  }, []);
-
-  const cycleWallpaper = () => {
-    const next = (wallpaperIndex + 1) % WALLPAPERS.length;
-    setWallpaperIndex(next);
-    localStorage.setItem('hul-os-wallpaper', next.toString());
-  };
+  const [activeApp, setActiveApp] = useState('tactical');
+  const AppComp = APPS.find(a => a.id === activeApp)?.component || TacticalMap;
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden text-slate-200 select-none">
-      <MenuBar onCycleWallpaper={cycleWallpaper} />
-      
-      <div className={`flex-1 relative overflow-hidden ${WALLPAPERS[wallpaperIndex]}`}>
-        {/* Desktop Icons */}
-        <div className="absolute inset-0 p-8 grid grid-cols-6 gap-6 content-start z-0">
-          {APPS.map(app => (
-            <button
-              key={app.id}
-              className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-white/10 transition-colors group focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              onDoubleClick={() => openWindow(app.id, app.title, app.defaultSize)}
-              title={app.title}
-            >
-              <div className="w-16 h-16 flex items-center justify-center bg-slate-900/60 border border-slate-700/50 rounded-2xl group-hover:scale-105 group-hover:border-indigo-500/50 transition-all shadow-lg backdrop-blur-sm">
-                {(() => { const AppIcon = getAppIcon(app.icon); return <AppIcon className="w-8 h-8 text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />; })()}
-              </div>
-              <span className="text-xs font-medium text-slate-300 drop-shadow-md text-center leading-tight line-clamp-2">
-                {app.title}
-              </span>
-            </button>
-          ))}
+    <div className="flex h-screen bg-black text-slate-200 overflow-hidden font-mono select-none">
+      {/* Sidebar */}
+      <div className="w-64 border-r border-zinc-800 bg-zinc-950 flex flex-col z-20 shadow-2xl relative">
+        <div className="p-5 border-b border-zinc-800 flex items-center gap-3 bg-zinc-900/50">
+           <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] text-black flex items-center justify-center font-bold text-lg tracking-tighter border border-emerald-400/50">
+             HUL
+           </div>
+           <div>
+             <div className="font-bold tracking-widest text-sm text-zinc-100">SCM OS</div>
+             <div className="text-[10px] text-emerald-400 font-semibold tracking-widest flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                CONTROL TOWER
+             </div>
+           </div>
         </div>
-
-        {/* System Status Widget */}
-        <div className="absolute bottom-8 right-8 w-64 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-xl p-4 shadow-2xl z-0 font-mono">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700/50">
-            <Activity className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-bold text-emerald-400 tracking-wider">SYSTEM OPERATIONAL</span>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-400">
-                <Server className="w-3.5 h-3.5" />
-                <span className="text-xs">Active Nodes</span>
-              </div>
-              <span className="text-sm font-semibold text-white">{stats.nodes.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-400">
-                <GitMerge className="w-3.5 h-3.5" />
-                <span className="text-xs">Network Lanes</span>
-              </div>
-              <span className="text-sm font-semibold text-white">{stats.lanes.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-400">
-                <Box className="w-3.5 h-3.5" />
-                <span className="text-xs">Managed SKUs</span>
-              </div>
-              <span className="text-sm font-semibold text-white">{stats.skus.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Windows Area */}
-        <div className="absolute inset-0 pointer-events-none z-10">
-          
-          
-          {Object.values(windows || {}).map(win => {
-            const app = APPS.find(a => a.id === win.id);
-            if (!app) return null;
-            if (win.isMinimized) return null;
-            
-            const AppComp = app.component;
+        <div className="flex-1 overflow-y-auto py-3 custom-scrollbar">
+          {APPS.map(app => {
+            const isActive = activeApp === app.id;
             return (
-              <div key={win.id} className="absolute inset-0 bg-red-500/50 z-50 pointer-events-none flex items-center justify-center text-white text-6xl font-bold">
-                RENDERED WINDOW: {win.id}
-                <Window id={win.id}>
-                  <AppComp />
-                </Window>
-              </div>
-            );
+              <button 
+                key={app.id} 
+                onClick={() => setActiveApp(app.id)}
+                className={`w-full flex items-center gap-3 px-6 py-3.5 text-sm transition-all duration-200 ${isActive ? 'bg-zinc-800/80 text-white border-l-2 border-emerald-500 shadow-inner' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'}`}
+              >
+                {(() => { 
+                  const AppIcon = getAppIcon(app.icon); 
+                  return <AppIcon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-zinc-500'}`} />; 
+                })()}
+                <span className="font-medium tracking-wide text-xs">{app.title.toUpperCase()}</span>
+              </button>
+            )
           })}
-
-
+        </div>
+        <div className="p-4 border-t border-zinc-800 text-[10px] text-zinc-600 flex flex-col gap-1">
+          <div>Hindustan Unilever Limited</div>
+          <div>SCM OS v2.0.4 (Build 8492)</div>
+          <div className="text-emerald-500/70 mt-1">SECURE CONNECTION</div>
         </div>
       </div>
 
-      <BottomBar 
-        windows={windows} 
-        onWindowClick={(id) => {
-          const win = windows.find(w => w.id === id);
-          if (win?.isMinimized) {
-            focusWindow(id);
-          } else if (win?.isFocused) {
-            minimizeWindow(id);
-          } else {
-            focusWindow(id);
-          }
-        }}
-      />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-full relative bg-zinc-900">
+        {/* Top Navbar */}
+        <div className="h-14 border-b border-zinc-800 bg-zinc-950 flex items-center px-6 justify-between shrink-0 z-10 shadow-md">
+           <div className="font-semibold text-zinc-200 tracking-widest text-sm flex items-center gap-3">
+             {(() => { 
+                const AppIcon = getAppIcon(APPS.find(a => a.id === activeApp)?.icon || 'layout'); 
+                return <AppIcon className="w-5 h-5 text-emerald-500" />; 
+             })()}
+             {APPS.find(a => a.id === activeApp)?.title.toUpperCase()}
+           </div>
+           <div className="flex items-center gap-6 text-xs font-semibold text-zinc-500 tracking-wider">
+             <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 rounded-md border border-zinc-800">
+               <Server className="w-3.5 h-3.5 text-blue-400" />
+               SYSTEM ACTIVE
+             </div>
+             <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 rounded-md border border-zinc-800">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> 
+               ORION ONLINE
+             </div>
+           </div>
+        </div>
+
+        {/* Application Render Space */}
+        <div className="flex-1 relative overflow-hidden">
+           <AppComp />
+        </div>
+      </div>
     </div>
-  );
+  )
 }
